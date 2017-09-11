@@ -1,0 +1,30 @@
+ITSM_EAI_INTERFACE_DEV:
+  endpointSync: 'http://10.121.241.117:5200/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
+  user: 'ramon'
+  password: '123456'
+
+ITSM_EAI_INTERFACE_PRD:
+  endpointSync: 'http://10.121.241.115:5100/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
+  user: 'ramon'
+  password: '995421'
+
+ERROR_MSG:
+  403: 'Invalid parameters'
+  500: 'Internal error, please contact Administrator of the system'
+  404: 'End-point not found'
+
+MONGO:
+    user: 'admin'
+    pwd: 'p4ssw0rd'
+    uri: 'mongodb://%s:%s@localhost:27017/mongo?autoMechanism=DEFAULT'
+    port: 27017
+    options:
+        server:
+            socketOptions:
+                keepAlive: 1
+                connectTimeoutMS: 30000
+            poolSize: 30
+        replset:
+            socketOptions:
+                keepAlive: 1
+                connectTimeoutMS: 30000
