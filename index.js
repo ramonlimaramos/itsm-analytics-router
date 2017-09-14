@@ -2,17 +2,21 @@
 
 'use strict'
 
-const http = require('http')
-const mongo = require('./config/mongo')()
 const app = require('./config/express')()
+const mongo = require('./config/mongo')()
+const http = require('http').Server(app)
+const io = require('./config/socketio')(http)
 
-mongo.connection.once('open', () => {
-    console.log('ITSM Analytics Mongo DB running on port', mongo.port)
-    console.log('ITSM Analytics Schedulers Started ...')
-    http.createServer(app).listen(app.get('port'), () => {
-        console.log('ITSM Analytics running on port', app.get('port'))
+http.listen(app.get('port'), () => {
+    console.log('ITSM Analytics running on port', app.get('port'))
+
+    app.set('io', io) // setting socket to be used inside the routes
+
+    mongo.connection.once('open', () => {
+        console.log('ITSM Analytics Mongo DB running on port', mongo.port)
     })
-})
-mongo.connection.on('error', (err) => {
-    console.log('ITSM Analytics Mongo DB connection error', err)
+
+    mongo.connection.on('error', (err) => {
+        console.log('ITSM Analytics Mongo DB connection error', err)
+    })
 })

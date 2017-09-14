@@ -2,10 +2,11 @@
 
 'use strict'
 
+const config = require('config').MONGO.msg
 const mongo = require('../config/mongo')()
 
 const ticketSchema = new mongo.schema.Schema({
-    ID: String,
+    ID: { type: String, unique: true },
     INCIDENT_TYPE: String,
     SERVICE_TYPE: String,
     STEP: String,
@@ -34,19 +35,19 @@ const ticketSchema = new mongo.schema.Schema({
     ASSIGNEE_P_ID: String,
     ASSIGNEE_P: String,
     ASSIGNEE_S: String,
-    OPEN_DATE: Date,
-    TRANSFER_DATE: Date,
-    RECEIPT_DATE: Date,
-    TARGET_DATE: Date,
-    ACTUAL_START_DATE: Date,
-    ACTUAL_RESOLVED_DATE: Date,
-    RESOLVED_DATE: Date,
-    CLOSED_DATE: Date,
-    EXPECTED_DATE: Date,
+    OPEN_DATE: String,
+    TRANSFER_DATE: String,
+    RECEIPT_DATE: String,
+    TARGET_DATE: String,
+    ACTUAL_START_DATE: String,
+    ACTUAL_RESOLVED_DATE: String,
+    RESOLVED_DATE: String,
+    CLOSED_DATE: String,
+    EXPECTED_DATE: String,
     TIME_TO_RESOLVE_MIN: Number,
     SATISFACTION: Number,
     SATISFACTION_COMMENTS: String,
-    SATISFACTION_DATE: Date,
+    SATISFACTION_DATE: String,
     SERVICE: String,
     SERVICE_CI: String,
     UAT_REQ: String,
@@ -80,7 +81,7 @@ module.exports = () => {
             if (counter % 1000 != 0)
                 bulk.execute((err, result) => {
                     if (err) reject(err)
-                    resolve(result)
+                    resolve(config.bulkupdated)
                 })
 
         })

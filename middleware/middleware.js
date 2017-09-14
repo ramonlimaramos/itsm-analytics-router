@@ -2,18 +2,27 @@
 
 'use strict'
 
-const config = require('config').ITSM_EAI_INTERFACE_DEV
+const config = require('config').ITSM_EAI_INTERFACE_PRD
 const request = require('request')
+const co = require('co')
 
 module.exports = () => {
     const middleware = {}
 
-    middleware.execute = () => {
+    middleware.execute = (input) => {
         return new Promise((resolve, reject) => {
-            middleware.auth()
-                .then(middleware.request)
-                .then(result => resolve(result))
-                .catch(err => reject(err))
+            let result, auth
+            co(function*() {
+                try {
+                    auth = yield middleware.auth()
+                    result = yield middleware.request(auth, input)
+                } catch (error) {
+                    reject(error)
+                }
+
+                resolve(result)
+                return true
+            })
         })
     }
 
@@ -28,11 +37,11 @@ module.exports = () => {
         })
     }
 
-    middleware.request = (auth) => {
+    middleware.request = (auth, input) => {
         return new Promise((resolve, reject) => {
             request.post({
                 uri: config.endpointSync,
-                form: { INVOKE: "sync" },
+                form: input,
                 headers: auth
             }, (err, response, body) => {
                 if (err) return reject(response)

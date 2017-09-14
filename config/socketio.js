@@ -1,11 +1,13 @@
 'use strict'
 
 const socketio = require('socket.io')
+const itsmSockets = require('../itsm/sockets')
 
-module.exports = (express, redis) => {
-    socketio(express)
-    socketio.adapter(redis({
-        host: config.REDIS.host,
-        port: config.REDIS.port
-    }))
+module.exports = (express) => {
+    const io = socketio(express)
+
+    // Declare application sockets
+    itsmSockets(io)
+
+    return io
 }

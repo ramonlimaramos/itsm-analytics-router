@@ -12,11 +12,13 @@ ERROR_MSG:
   403: 'Invalid parameters'
   500: 'Internal error, please contact Administrator of the system'
   404: 'End-point not found'
+  periodEnableQueryDate: 60
+  periodEnableQueryDateMsg: 'The period between start and end date is too large, for query in real-time'
 
 MONGO:
     user: 'admin'
     pwd: 'p4ssw0rd'
-    uri: 'mongodb://%s:%s@localhost:27017/mongo?autoMechanism=DEFAULT'
+    uri: 'mongodb://%s:%s@localhost:27017/admin?autoMechanism=DEFAULT'
     port: 27017
     options:
         server:
@@ -28,3 +30,6 @@ MONGO:
             socketOptions:
                 keepAlive: 1
                 connectTimeoutMS: 30000
+    msg:
+        bulkupdated: 
+            result: 'Records were upserted with success result'

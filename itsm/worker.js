@@ -5,46 +5,43 @@
 const wrap = require('co-express')
 const itsm = require('../middleware')()
 const ticket = require('./model')()
+const validation = require('./validation')()
 
-module.exports = () => {
+module.exports = (io) => {
     const controller = {}
 
     controller.ticket = wrap(function*(req, res, next) {
-        let result
-
+        let result, input
         try {
-            result = yield itsm.execute()
+            input = yield validation.isQueryValid(req.query)
+            result = yield itsm.execute(input)
         } catch (err) {
-            console.log(err)
-            return next(err)
+            console.error(err)
+            return res.status(403).json(err)
         }
-
         return res.json(result)
     })
 
     controller.ticketDetail = wrap(function*(req, res, next) {
         let result
-            //let validator
         try {
-            //validator = yield validation.isValid(req)
             result = yield itsm.execute()
         } catch (err) {
-            return next(err)
+            console.error(err)
+            return res.status(403).json(err)
         }
-
         return res.json(result)
     })
 
-
     controller.mergeTicket = wrap(function*(req, res, next) {
         let result
-
         try {
-            result = yield ticket.bulkMerge(req.outData.results)
-        } catch (error) {
-            return next(error)
+            let isNull = yield validation.isNull(req.body)
+            if (!isNull)
+                result = yield ticket.bulkMerge(req.body.results)
+        } catch (err) {
+            return res.status(403).json(err)
         }
-
         return res.json(result)
     })
 
