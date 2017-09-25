@@ -1,3 +1,10 @@
+EXPRESS:
+    base_url: 'http://10.127.38.210:5111/itsm-analytics/'
+    socket_url: 'http://10.127.38.210:5111'
+
+ITSM:
+    period_delay: 90
+
 ITSM_EAI_INTERFACE_DEV:
   endpointSync: 'http://10.121.241.117:5200/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
   user: 'ramon'
@@ -12,8 +19,16 @@ ERROR_MSG:
   403: 'Invalid parameters'
   500: 'Internal error, please contact Administrator of the system'
   404: 'End-point not found'
+  method_not_allowed: 'Method not allowed on api'
   periodEnableQueryDate: 60
   periodEnableQueryDateMsg: 'The period between start and end date is too large, for query in real-time'
+
+JWT:
+    jwt_secret: 'secret'
+    jwt_session:
+        session: false
+    msg:
+        access_denied: 'Unauthorized access'
 
 MONGO:
     user: 'admin'

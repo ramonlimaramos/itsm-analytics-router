@@ -10,7 +10,7 @@ const io = require('./config/socketio')(http)
 http.listen(app.get('port'), () => {
     console.log('ITSM Analytics running on port', app.get('port'))
 
-    app.set('io', io) // setting socket to be used inside the routes
+    app.set('io', io) // setting socket to be used inside the express routes
 
     mongo.connection.once('open', () => {
         console.log('ITSM Analytics Mongo DB running on port', mongo.port)

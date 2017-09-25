@@ -5,17 +5,22 @@
 const path = require('path')
 
 const express = require('express')
+const config = require('config')
 const itsm = require('../itsm')
+const auth = require('../auth')()
 const bodyParser = require('body-parser')
 
 module.exports = () => {
     const app = express()
     app.set('port', process.env.PORT || 5111)
+    app.use(auth.initialize())
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     app.use(bodyParser.json({ limit: '50mb' }))
     app.use(require('method-override')())
     app.disable('x-powered-by')
-    app.use(express.static(path.join(__dirname, 'public')))
+    app.use('/itsm-analytics', express.static(path.join(__dirname, '../public')))
+    app.set('view engine', 'ejs')
+    app.locals = config.EXPRESS
     app.use((req, res, next) => { // API Cross Domain
         res.header("Access-Control-Allow-Origin", "*")
         res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -29,7 +34,7 @@ module.exports = () => {
             method != 'PUT' &&
             method != 'DELETE' &&
             method != 'OPTIONS')
-            res.status(405).json({ result: config.msg.method_not_allowed })
+            res.status(405).json({ result: config.ERROR_MSG.method_not_allowed })
         else
             next()
     })
@@ -38,11 +43,11 @@ module.exports = () => {
     itsm(app)
 
     app.use((err, req, res, next) => { //Error Handle
-        res.status(500).json({ error: err.message })
+        res.status(500).json(config.ERROR_MSG[500])
         next(err)
     })
     app.use((req, res, next) => { // 404 Handler
-        res.status(404).json(config.msg.not_found);
+        res.status(404).json(config.ERROR_MSG[404]);
     });
 
     return app

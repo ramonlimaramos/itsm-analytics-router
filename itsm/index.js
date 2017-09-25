@@ -3,8 +3,7 @@
 'use strict'
 
 const path = require('path')
-const itsm = require('./worker')
-const frontEndPath = { root: path.join(__dirname, '../public') }
+const itsm = require('./router')
 
 module.exports = (app) => {
     const itsmWorker = itsm(app.get('io')) //getting socketio for every route
@@ -16,15 +15,24 @@ module.exports = (app) => {
 
     // Front-End Routes
     app.get('/itsm-analytics/', (req, res, next) => {
-        res.sendFile('index.html', frontEndPath)
+        res.render('pages/index')
     })
-    app.get('/itsm-analytics/service/received', (req, res, next) => {
-        res.sendFile('service-received.html', frontEndPath)
+    app.get('/itsm-analytics/received', (req, res, next) => {
+        res.render('pages/index')
     })
-    app.get('/itsm-analytics/service/ongoing', (req, res, next) => {
-        res.sendFile('service-ongoing.html', frontEndPath)
+    app.get('/itsm-analytics/ongoing', (req, res, next) => {
+        res.render('pages/ongoing')
     })
-    app.get('/itsm-analytics/service/resolved', (req, res, next) => {
-        res.sendFile('service-resolved.html', frontEndPath)
+    app.get('/itsm-analytics/ongoing/not-accepted-by-haeb', (req, res, next) => {
+        res.render('pages/ongoing-notaccepthaeb')
+    })
+    app.get('/itsm-analytics/ongoing/delayed-more-than-nighteen-days', (req, res, next) => {
+        res.render('pages/ongoing-90days')
+    })
+    app.get('/itsm-analytics/ongoing/resolution-delay', (req, res, next) => {
+        res.render('pages/ongoing-resolutiondelay')
+    })
+    app.get('/itsm-analytics/resolved', (req, res, next) => {
+        res.render('pages/resolved')
     })
 }

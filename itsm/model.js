@@ -87,30 +87,57 @@ module.exports = () => {
         })
     }
 
-    /*methods.findAll = (params, opt) => {
+    methods.findAll = (params, opt) => {
         return new Promise((resolve, reject) => {
             let options = {
                 offset: opt.offset || 0,
                 limit: opt.limit || 50,
                 page: opt.page || 0,
-                sort: { execution_time: 'desc' }
+                sort: { OPEN_DATE: 'asc' }
             }
 
-            EarlyWarningModel.paginate(params, options, (err, result) => {
+            ticketModel.paginate(params, options, (err, result) => {
                 if (err) reject(err)
                 resolve(result)
             })
         })
     }
 
-    methods.findById = (full_warning_id) => {
+    methods.findById = (id) => {
         return new Promise((resolve, reject) => {
-            EarlyWarningModel.findOne({ full_warning_id: full_warning_id }, (err, ew) => {
+            ticketModel.findOne({ ID: id }, (err, ticket) => {
                 if (err) reject(err)
-                resolve(ew)
+                resolve(ticket)
             })
         })
-    }*/
+    }
+
+    methods.count = (query) => {
+        return new Promise((resolve, reject) => {
+            ticketModel.count(query, (err, count) => {
+                if (err) reject(err)
+                resolve(count)
+            })
+        })
+    }
+
+    methods.aggregate = (query) => {
+        return new Promise((resolve, reject) => {
+            ticketModel.aggregate(query, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    methods.distinct = (field) => {
+        return new Promise((resolve, reject) => {
+            ticketModel.distinct(field, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
 
     return methods
 }
