@@ -1,6 +1,7 @@
 'use strict'
 
 const co = require('co')
+const config = require('config').ITSM
 const moment = require('moment')
 const itsm = require('./model')()
 
@@ -207,11 +208,14 @@ module.exports = () => {
 
     methods.getNotAcceptedHaeb = () => {
         return co(function*() {
-            let result
+            let result = {}
             try {
                 let delayed = [];
-                result = yield itsm.findAll({ STEP: "New" }, {})
-                for (let res of result.docs) {
+                result.notDelayed = yield itsm.findAll({
+                    $query: { STEP: "New" },
+                    $orderby: { OPEN_DATE: 1 }
+                })
+                for (let res of result.notDelayed) {
                     let compareDate = moment(new Date(res.OPEN_DATE)).add(1, "d")
                     if (compareDate.isBefore(moment()))
                         delayed.push(res)
@@ -229,19 +233,22 @@ module.exports = () => {
         return co(function*() {
             let result
             try {
-                let ninghteeDaysAgo = moment().subtract(90, 'd').format('YYYY-MM-DD')
+                let period = moment().subtract(config.period_delay, 'd').format('YYYY-MM-DD')
                 let query = {
-                    $and: [
-                        { OPEN_DATE: { $lte: `${ninghteeDaysAgo} 00:00:00.0` } },
-                        {
-                            $nor: [
-                                { STEP: "Closed" },
-                                { STEP: "Closed (Reject)" }
-                            ]
-                        }
-                    ]
+                    $query: {
+                        $and: [
+                            { OPEN_DATE: { $lte: `${period} 00:00:00.0` } },
+                            {
+                                $nor: [
+                                    { STEP: "Closed" },
+                                    { STEP: "Closed (Reject)" }
+                                ]
+                            }
+                        ]
+                    },
+                    $orderby: { OPEN_DATE: 1 }
                 }
-                result = yield itsm.findAll(query, {})
+                result = yield itsm.findAll(query)
             } catch (error) {
                 console.log(error)
                 throw error
@@ -253,27 +260,105 @@ module.exports = () => {
 
     methods.getResolutionDelay = () => {
         return co(function*() {
-            let result
             try {
                 let today = moment().format('YYYY-MM-DD')
                 let query = {
-                    $and: [
-                        { TARGET_DATE: { $lte: `${today} 00:00:00.0` } },
-                        {
-                            $nor: [
-                                { STEP: "New" },
-                                { STEP: "Closed" },
-                                { STEP: "Closed (Reject)" }
+                    $query: {
+                        $and: [
+                            { TARGET_DATE: { $lte: `${today} 00:00:00.0` } },
+                            {
+                                $nor: [
+                                    { STEP: "New" },
+                                    { STEP: "Closed" },
+                                    { STEP: "Closed (Reject)" }
+                                ]
+                            }
+                        ]
+                    },
+                    $orderby: { OPEN_DATE: 1 }
+                }
+                return yield itsm.findAll(query)
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+        })
+    }
+
+    methods.getSLASatisfactionTeam = () => {
+        return co(function*() {
+            let query = [{
+                        $match: {
+                            $and: [
+                                { OPEN_DATE: new RegExp(moment().format('YYYY')) },
+                                { SATISFACTION_DATE: { $not: new RegExp('(^$|^.*@.*\..*$)') } },
+                                { $or: [{ STEP: "Closed" }, { STEP: "Closed (Reject)" }] }
                             ]
                         }
-                    ]
+                    },
+                    {
+                        $group: {
+                            _id: "$OPERATING_TEAM",
+                            avgSatisfaction: { $avg: "$SATISFACTION" },
+                            totalTickets: { $sum: 1 }
+                        }
+                    },
+                    { $sort: { avgSatisfaction: -1 } }
+                ],
+                result
+            try {
+                let data = yield itsm.aggregate(query)
+                result = {
+                    currentTeams: methods.getTeams().map(t => {
+                        return data.filter(obj => { return obj._id == t })[0]
+                    })
                 }
-                result = yield itsm.findAll(query, {})
             } catch (error) {
                 console.log(error)
                 throw error
             }
 
+            return result
+        })
+    }
+
+    methods.getSLAAcceptence = () => {
+        return co(function*() {
+            let list, conditions,
+                result = {},
+                countOpenLessThanReceipt = 0
+            try {
+                conditions = {
+                    $query: {
+                        $and: [
+                            { OPEN_DATE: new RegExp(moment().format('YYYY')) },
+                            {
+                                $nor: [
+                                    { STEP: "New" },
+                                    { STEP: "Closed" },
+                                    { STEP: "Closed (Reject)" }
+                                ]
+                            }
+                        ]
+                    },
+                    $orderby: { OPEN_DATE: 1 }
+                }
+                list = yield itsm.findAll(conditions)
+
+                for (let item of list) {
+                    let openDate = moment(new Date(item.OPEN_DATE)).add(24, 'h'),
+                        receiptDate = moment(new Date(item.RECEIPT_DATE))
+                    if (openDate.isBefore(receiptDate))
+                        countOpenLessThanReceipt++
+                }
+
+                result.total = list.length
+                result.totalOpenLessReceipt = countOpenLessThanReceipt
+                result.percent = parseInt((countOpenLessThanReceipt / result.total) * 100)
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
             return result
         })
     }

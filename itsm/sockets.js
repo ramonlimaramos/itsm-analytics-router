@@ -53,6 +53,20 @@ module.exports = (io) => {
             })
         })
 
+        socket.on('ongoingSLASatisfactionTeam', data => {
+            co(function*() {
+                let result = yield worker.getSLASatisfactionTeam()
+                socket.emit('ongoingSLASatisfactionTeamResponse', result)
+            })
+        })
+
+        socket.on('ongoingSLAAcceptence', data => {
+            co(function*() {
+                let result = yield worker.getSLAAcceptence()
+                socket.emit('ongoingSLAAcceptenceResponse', result)
+            })
+        })
+
         // Starting Emittion Scheduler
         scheduler.sockets(socket, worker)
 

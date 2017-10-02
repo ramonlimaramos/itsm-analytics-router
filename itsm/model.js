@@ -2,8 +2,11 @@
 
 'use strict'
 
+const co = require('co')
+
 const config = require('config').MONGO.msg
 const mongo = require('../config/mongo')()
+const validation = require('./validation')()
 
 const ticketSchema = new mongo.schema.Schema({
     ID: { type: String, unique: true },
@@ -63,43 +66,57 @@ module.exports = () => {
 
     methods.bulkMerge = (input) => {
         return new Promise((resolve, reject) => {
-            let bulk = ticketModel.collection.initializeOrderedBulkOp()
-            let sizeTickets = input.length
-            let counter = 0
+            co(function*() {
+                let bulk = ticketModel.collection.initializeOrderedBulkOp(),
+                    sizeTickets = input.length,
+                    counter = 0
+                try {
+                    for (let index = 0; index < sizeTickets; index++) {
+                        let obj = yield validation.renderTicket(input[index])
+                        bulk.find({ ID: obj.ID }).upsert().updateOne(obj)
+                        counter++
 
-            for (let index = 0; index < sizeTickets; index++) {
-                bulk.find({ ID: input[index].ID }).upsert().updateOne(input[index])
-                counter++
+                        if (counter % 1000 == 0)
+                            bulk.execute((err, result) => {
+                                if (err) reject(err)
+                                bulk = ticketModel.collection.initializeOrderedBulkOp()
+                            })
+                    }
 
-                if (counter % 1000 == 0)
-                    bulk.execute((err, result) => {
-                        if (err) reject(err)
-                        bulk = ticketModel.collection.initializeOrderedBulkOp()
-                    })
-            }
-
-            if (counter % 1000 != 0)
-                bulk.execute((err, result) => {
-                    if (err) reject(err)
-                    resolve(config.bulkupdated)
-                })
-
+                    if (counter % 1000 != 0)
+                        bulk.execute((err, result) => {
+                            if (err) reject(err)
+                            resolve(config.bulkupdated)
+                        })
+                } catch (error) {
+                    console.log(error)
+                    reject(error)
+                }
+                return true
+            })
         })
     }
 
     methods.findAll = (params, opt) => {
         return new Promise((resolve, reject) => {
-            let options = {
-                offset: opt.offset || 0,
-                limit: opt.limit || 50,
-                page: opt.page || 0,
-                sort: { OPEN_DATE: 'asc' }
-            }
+            if (opt) {
+                let options = {
+                    offset: opt.offset || 0,
+                    limit: opt.limit || 50,
+                    page: opt.page || 0,
+                    sort: { OPEN_DATE: 'asc' }
+                }
 
-            ticketModel.paginate(params, options, (err, result) => {
-                if (err) reject(err)
-                resolve(result)
-            })
+                ticketModel.paginate(params, options, (err, result) => {
+                    if (err) reject(err)
+                    resolve(result)
+                })
+            } else {
+                ticketModel.find(params, (err, result) => {
+                    if (err) reject(err)
+                    resolve(result)
+                })
+            }
         })
     }
 
@@ -113,8 +130,9 @@ module.exports = () => {
     }
 
     methods.count = (query) => {
+        let search = query || {}
         return new Promise((resolve, reject) => {
-            ticketModel.count(query, (err, count) => {
+            ticketModel.count(search, (err, count) => {
                 if (err) reject(err)
                 resolve(count)
             })

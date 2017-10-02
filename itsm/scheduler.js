@@ -26,6 +26,9 @@ module.exports = () => {
 
                 result = yield args.worker.getResolutionDelay()
                 args.socket.emit('ongoingResolutionDelayResponse', result)
+
+                result = yield args.worker.getSLASatisfactionTeam()
+                args.socket.emit('ongoingSLASatisfactionTeamResponse', result)
             } catch (error) {
                 console.log(error)
             }
