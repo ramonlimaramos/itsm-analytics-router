@@ -8,40 +8,45 @@ module.exports = () => {
 
     methods.emitAll = (args) => {
         return co(function*() {
-            let result
             try {
                 // Received Invokers
-                result = yield args.worker.getReceivedAndApprovedTeam()
-                args.socket.emit('receivedAndApprovedResponse', result)
-
-                result = yield args.worker.getGranTotal()
-                args.socket.emit('granTotalResponse', result)
+                args.io.of('received')
+                    .emit('receivedReceivedAndApprovedTeam', yield args.worker.getReceivedAndApprovedTeam())
+                args.io.of('received')
+                    .emit('receivedGranTotal', yield args.worker.getGranTotal())
+                args.io.of('received')
+                    .emit('receivedReceivedAndApprovedDept', yield args.worker.getReceivedAndApprovedDept())
 
                 // Ongoing Invokers
-                result = yield args.worker.getNotAcceptedHaeb()
-                args.socket.emit('ongoingNotAcceptedHaebResponse', result)
+                args.io.of('ongoing')
+                    .emit('ongoingNotAcceptedHaeb', yield args.worker.getNotAcceptedHaeb())
+                args.io.of('ongoing')
+                    .emit('ongoingPeriodDaysDelayed', yield args.worker.getPeriodDaysDelayed())
+                args.io.of('ongoing')
+                    .emit('ongoingResolutionDelay', yield args.worker.getResolutionDelay())
+                args.io.of('ongoing')
+                    .emit('ongoingSLASatisfactionTeam', yield args.worker.getSLASatisfactionTeam())
+                args.io.of('ongoing')
+                    .emit('ongoingSLAAcceptence', yield args.worker.getSLAAcceptence())
 
-                result = yield args.worker.getPeriodDaysDelayed()
-                args.socket.emit('ongoingPeriodDaysDelayedResponse', result)
-
-                result = yield args.worker.getResolutionDelay()
-                args.socket.emit('ongoingResolutionDelayResponse', result)
-
-                result = yield args.worker.getSLASatisfactionTeam()
-                args.socket.emit('ongoingSLASatisfactionTeamResponse', result)
             } catch (error) {
-                console.log(error)
+                console.error(error)
             }
         })
     }
 
     methods.sockets = (io, wk) => {
-        // Will emitt all sockets of ITSM every 20 sec.
-        let rule = new schedule.RecurrenceRule()
-        rule.second = 20
+        // Will emitt all sockets of ITSM every 1 min.
+        schedule.scheduleJob('1 * * * *', methods.emitAll.bind(null, {
+            io: io,
+            worker: wk
+        }))
+    }
 
-        let bindOjb = { socket: io, worker: wk }
-        schedule.scheduleJob(rule, methods.emitAll.bind(null, bindOjb))
+    methods.disableAll = () => {
+        for (let sch in schedule.scheduledJobs) {
+            schedule.scheduledJobs[sch].cancel()
+        }
     }
 
     return methods

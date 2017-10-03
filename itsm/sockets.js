@@ -7,71 +7,46 @@ const scheduler = require('./scheduler')()
 const co = require('co')
 
 module.exports = (io) => {
-    io.sockets.on('connection', socket => {
-        console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected`)
 
-        // sockets actions as routes
-        socket.on('receivedAndApproved', data => {
-            co(function*() {
-                let result = yield worker.getReceivedAndApprovedTeam()
-                socket.emit('receivedAndApprovedResponse', result)
-            })
+    // Emitting data for sockets on ONGOING RULE
+    io.of('/ongoing').on('connection', socket => {
+        console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected ongoing`)
+        co(function*() {
+            try {
+                socket.emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
+                socket.emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
+                socket.emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
+                socket.emit('ongoingSLASatisfactionTeam', yield worker.getSLASatisfactionTeam())
+                socket.emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
+            } catch (error) {
+                console.error(error)
+            }
         })
-
-        socket.on('granTotal', data => {
-            co(function*() {
-                let result = yield worker.getGranTotal()
-                socket.emit('granTotalResponse', result)
-            })
-        })
-
-        socket.on('receivedAndApprovedDept', data => {
-            co(function*() {
-                let result = yield worker.getReceivedAndApprovedDept()
-                socket.emit('receivedAndApprovedDeptResponse', result)
-            })
-        })
-
-        socket.on('ongoingNotAcceptedHaeb', data => {
-            co(function*() {
-                let result = yield worker.getNotAcceptedHaeb()
-                socket.emit('ongoingNotAcceptedHaebResponse', result)
-            })
-        })
-
-        socket.on('ongoingPeriodDaysDelayed', data => {
-            co(function*() {
-                let result = yield worker.getPeriodDaysDelayed()
-                socket.emit('ongoingPeriodDaysDelayedResponse', result)
-            })
-        })
-
-        socket.on('ongoingResolutionDelay', data => {
-            co(function*() {
-                let result = yield worker.getResolutionDelay()
-                socket.emit('ongoingResolutionDelayResponse', result)
-            })
-        })
-
-        socket.on('ongoingSLASatisfactionTeam', data => {
-            co(function*() {
-                let result = yield worker.getSLASatisfactionTeam()
-                socket.emit('ongoingSLASatisfactionTeamResponse', result)
-            })
-        })
-
-        socket.on('ongoingSLAAcceptence', data => {
-            co(function*() {
-                let result = yield worker.getSLAAcceptence()
-                socket.emit('ongoingSLAAcceptenceResponse', result)
-            })
-        })
-
-        // Starting Emittion Scheduler
-        scheduler.sockets(socket, worker)
-
         socket.on('disconnect', () => {
-            console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} disconnected`)
+            console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} disconnected from ongoing`)
         })
     })
+
+    // Emitting data for sockets on RECEIVED RULE
+    io.of('/received').on('connection', socket => {
+        console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected received`)
+        co(function*() {
+            try {
+                socket
+                    .emit('receivedReceivedAndApprovedTeam', yield worker.getReceivedAndApprovedTeam())
+                socket
+                    .emit('receivedGranTotal', yield worker.getGranTotal())
+                socket
+                    .emit('receivedReceivedAndApprovedDept', yield worker.getReceivedAndApprovedDept())
+            } catch (error) {
+                console.error(error)
+            }
+        })
+        socket.on('disconnect', () => {
+            console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} disconnected from received`)
+        })
+    })
+
+    // Starting Emittion Scheduler for each socket
+    scheduler.sockets(io, worker)
 }

@@ -6,12 +6,12 @@ const path = require('path')
 const itsm = require('./router')
 
 module.exports = (app) => {
-    const itsmWorker = itsm(app.get('io')) //getting socketio for every route
+    const router = itsm(app.get('io')) //setting socketio for every route
 
     // API Routes
-    app.get('/api/itsm-analytics/v1/tickets', itsmWorker.ticket)
-    app.post('/api/itsm-analytics/v1/tickets', itsmWorker.mergeTicket)
-    app.get('/api/itsm-analytics/v1/ticket/:id', itsmWorker.ticketDetail)
+    app.get('/api/itsm-analytics/v1/tickets', router.ticket)
+    app.post('/api/itsm-analytics/v1/tickets', router.mergeTicket)
+    app.get('/api/itsm-analytics/v1/ticket/:id', router.ticketDetail)
 
     // Front-End Routes
     app.get('/itsm-analytics/', (req, res, next) => {

@@ -291,8 +291,7 @@ module.exports = () => {
                         $match: {
                             $and: [
                                 { OPEN_DATE: new RegExp(moment().format('YYYY')) },
-                                { SATISFACTION_DATE: { $not: new RegExp('(^$|^.*@.*\..*$)') } },
-                                { $or: [{ STEP: "Closed" }, { STEP: "Closed (Reject)" }] }
+                                { SATISFACTION: { $ne: 0 } }
                             ]
                         }
                     },
@@ -335,7 +334,6 @@ module.exports = () => {
                             {
                                 $nor: [
                                     { STEP: "New" },
-                                    { STEP: "Closed" },
                                     { STEP: "Closed (Reject)" }
                                 ]
                             }
@@ -346,15 +344,15 @@ module.exports = () => {
                 list = yield itsm.findAll(conditions)
 
                 for (let item of list) {
-                    let openDate = moment(new Date(item.OPEN_DATE)).add(24, 'h'),
+                    let openDate = moment(new Date(item.OPEN_DATE)).add(1, 'd'),
                         receiptDate = moment(new Date(item.RECEIPT_DATE))
-                    if (openDate.isBefore(receiptDate))
+                    if (receiptDate.diff(openDate, 'days') > 24)
                         countOpenLessThanReceipt++
                 }
 
                 result.total = list.length
                 result.totalOpenLessReceipt = countOpenLessThanReceipt
-                result.percent = parseInt((countOpenLessThanReceipt / result.total) * 100)
+                result.percent = (100 - ((countOpenLessThanReceipt / result.total) * 100)).toFixed(2)
             } catch (error) {
                 console.log(error)
                 throw error
