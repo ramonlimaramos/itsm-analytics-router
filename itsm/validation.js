@@ -3,6 +3,7 @@
 const util = require('util')
 const moment = require('moment')
 const config = require('config').ERROR_MSG
+const itsmConf = require('config').ITSM
 
 module.exports = () => {
     const methods = {}
@@ -20,8 +21,8 @@ module.exports = () => {
 
                     // checking the period for query real-time
                     if (util.isNullOrUndefined(query.INVOKE) || query.INVOKE == 'sync') {
-                        let endDateDifference = moment(new Date(query.ENDDATE))
-                        let startDate = moment(new Date(query.STARTDATE))
+                        let endDateDifference = moment(query.ENDDATE)
+                        let startDate = moment(query.STARTDATE)
                         if (endDateDifference.diff(startDate, 'days') >= config.periodEnableQueryDate)
                             reject(config.periodEnableQueryDateMsg)
                     }
@@ -77,19 +78,19 @@ module.exports = () => {
                     ASSIGNEE_P_ID: obj.ASSIGNEE_P_ID.toString(),
                     ASSIGNEE_P: obj.ASSIGNEE_P.toString(),
                     ASSIGNEE_S: obj.ASSIGNEE_S.toString(),
-                    OPEN_DATE: obj.OPEN_DATE.toString(),
-                    TRANSFER_DATE: obj.TRANSFER_DATE.toString(),
-                    RECEIPT_DATE: obj.RECEIPT_DATE.toString(),
-                    TARGET_DATE: obj.TARGET_DATE.toString(),
-                    ACTUAL_START_DATE: obj.ACTUAL_START_DATE.toString(),
-                    ACTUAL_RESOLVED_DATE: obj.ACTUAL_RESOLVED_DATE.toString(),
-                    RESOLVED_DATE: obj.RESOLVED_DATE.toString(),
-                    CLOSED_DATE: obj.CLOSED_DATE.toString(),
-                    EXPECTED_DATE: obj.EXPECTED_DATE.toString(),
+                    OPEN_DATE: methods.getItsmBrazilDate(obj.OPEN_DATE),
+                    TRANSFER_DATE: methods.getItsmBrazilDate(obj.TRANSFER_DATE),
+                    RECEIPT_DATE: methods.getItsmBrazilDate(obj.RECEIPT_DATE),
+                    TARGET_DATE: methods.getItsmBrazilDate(obj.TARGET_DATE),
+                    ACTUAL_START_DATE: methods.getItsmBrazilDate(obj.ACTUAL_START_DATE),
+                    ACTUAL_RESOLVED_DATE: methods.getItsmBrazilDate(obj.ACTUAL_RESOLVED_DATE),
+                    RESOLVED_DATE: methods.getItsmBrazilDate(obj.RESOLVED_DATE),
+                    CLOSED_DATE: methods.getItsmBrazilDate(obj.CLOSED_DATE),
+                    EXPECTED_DATE: methods.getItsmBrazilDate(obj.EXPECTED_DATE),
                     TIME_TO_RESOLVE_MIN: parseInt(obj.TIME_TO_RESOLVE_MIN),
                     SATISFACTION: parseInt(obj.SATISFACTION),
                     SATISFACTION_COMMENTS: obj.SATISFACTION_COMMENTS.toString(),
-                    SATISFACTION_DATE: obj.SATISFACTION_DATE.toString(),
+                    SATISFACTION_DATE: methods.getItsmBrazilDate(obj.SATISFACTION_DATE),
                     SERVICE: obj.SERVICE.toString(),
                     SERVICE_CI: obj.SERVICE_CI.toString(),
                     UAT_REQ: obj.UAT_REQ.toString(),
@@ -100,6 +101,14 @@ module.exports = () => {
                 reject(error)
             }
         })
+    }
+
+    methods.getItsmBrazilDate = (obj) => {
+        let regex = new RegExp('[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]')
+
+        return obj.match(regex) ? moment(obj)
+            .subtract(itsmConf.hours_reduce, 'h')
+            .format('YYYY-MM-DD hh:mm:ss') : ''
     }
 
     return methods

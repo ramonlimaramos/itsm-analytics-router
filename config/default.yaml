@@ -4,6 +4,11 @@ EXPRESS:
 
 ITSM:
     period_delay: 90
+    hours_reduce: 11
+
+SOCKET:
+    rememberTransport: false
+    transports: ['WebSocket', 'Flash Socket', 'AJAX long-polling']
 
 ITSM_EAI_INTERFACE_DEV:
   endpointSync: 'http://10.121.241.117:5200/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'

@@ -216,7 +216,7 @@ module.exports = () => {
                     $orderby: { OPEN_DATE: 1 }
                 })
                 for (let res of result.notDelayed) {
-                    let compareDate = moment(new Date(res.OPEN_DATE)).add(1, "d")
+                    let compareDate = moment(res.OPEN_DATE).add(1, "d")
                     if (compareDate.isBefore(moment()))
                         delayed.push(res)
                 }
@@ -261,7 +261,7 @@ module.exports = () => {
     methods.getResolutionDelay = () => {
         return co(function*() {
             try {
-                let today = moment().format('YYYY-MM-DD')
+                let today = moment().add(24, 'h').format('YYYY-MM-DD')
                 let query = {
                     $query: {
                         $and: [
@@ -285,7 +285,7 @@ module.exports = () => {
         })
     }
 
-    methods.getSLASatisfactionTeam = () => {
+    methods.getSLASatisfactionTeam = (all) => {
         return co(function*() {
             let query = [{
                         $match: {
@@ -297,7 +297,7 @@ module.exports = () => {
                     },
                     {
                         $group: {
-                            _id: "$OPERATING_TEAM",
+                            _id: (all) ? null : "$OPERATING_TEAM",
                             avgSatisfaction: { $avg: "$SATISFACTION" },
                             totalTickets: { $sum: 1 }
                         }
@@ -307,10 +307,12 @@ module.exports = () => {
                 result
             try {
                 let data = yield itsm.aggregate(query)
-                result = {
-                    currentTeams: methods.getTeams().map(t => {
-                        return data.filter(obj => { return obj._id == t })[0]
-                    })
+                result = (all) ? data[0] : {
+                    currentTeams: methods
+                        .getTeams()
+                        .map(t => {
+                            return data.filter(obj => { return obj._id == t })[0]
+                        })
                 }
             } catch (error) {
                 console.log(error)
@@ -344,8 +346,8 @@ module.exports = () => {
                 list = yield itsm.findAll(conditions)
 
                 for (let item of list) {
-                    let openDate = moment(new Date(item.OPEN_DATE)).add(1, 'd'),
-                        receiptDate = moment(new Date(item.RECEIPT_DATE))
+                    let openDate = moment(item.OPEN_DATE).add(1, 'd'),
+                        receiptDate = moment(item.RECEIPT_DATE)
                     if (receiptDate.diff(openDate, 'days') > 24)
                         countOpenLessThanReceipt++
                 }
@@ -361,5 +363,85 @@ module.exports = () => {
         })
     }
 
+    methods.getResolution = () => {
+        return co(function*() {
+            let list, conditions,
+                result = {},
+                count = 0
+            try {
+                conditions = {
+                    $query: {
+                        $and: [
+                            { OPEN_DATE: new RegExp(moment().format('YYYY')) },
+                            { STEP: "Closed" }
+                        ]
+                    },
+                    $orderby: { OPEN_DATE: 1 }
+                }
+
+                list = yield itsm.findAll(conditions)
+                for (let item of list) {
+                    let resolvedDate = moment(item.RESOLVED_DATE),
+                        targetDate = moment(item.TARGET_DATE)
+                    if (resolvedDate.isAfter(targetDate, 'hours'))
+                        count++
+                }
+
+                result.total = list.length
+                result.count = count
+                result.percent = (((result.total - count) / result.total) * 100).toFixed(2)
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+            return result
+        })
+    }
+
+    methods.totalTicketsMetrics = () => {
+        return co(function*() {
+            let result = {}
+            try {
+                let months = methods.getMonthsByRange([
+                        ...Array(parseInt(moment().format('MM'))).keys()
+                    ]),
+
+                    query = yield itsm.findAll({
+                        OPEN_DATE: new RegExp(moment().format('YYYY'))
+                    }),
+
+                    totalYearOpen = query.filter(o => {
+                        return o.STEP !== "Closed (Reject)" && o.STEP !== "Cancel"
+                    }).length,
+
+                    totalResolved = query.filter(o => o.STEP == "Closed").length
+
+                months.pop()
+
+                result.total = totalYearOpen
+                result.percentResolved = ((totalResolved / totalYearOpen) * 100).toFixed(2)
+                result.percentNotResolved = (100 - result.percentResolved).toFixed(2)
+                result.data = []
+
+                months.forEach((obj, idx) => {
+                    let currMonth = query.filter(o => {
+                        return moment().month(moment(o.OPEN_DATE).format('MMM'), 'months')
+                            .isSame(moment().month(obj.val), 'months') &&
+                            o.STEP !== "Closed (Reject)"
+                    })
+                    obj.total = currMonth.length
+                    obj.resolved = currMonth.filter(o => o.STEP == "Closed").length
+                    obj.notResolved = currMonth.filter(o => o.STEP !== "Closed").length
+
+                    result.data.push(obj)
+                })
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+
+            return result
+        })
+    }
     return methods
 }

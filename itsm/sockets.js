@@ -9,15 +9,19 @@ const co = require('co')
 module.exports = (io) => {
 
     // Emitting data for sockets on ONGOING RULE
-    io.of('/ongoing').on('connection', socket => {
+    const ongoing = io.of('/ongoing')
+    ongoing.on('connection', socket => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected ongoing`)
         co(function*() {
             try {
-                socket.emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
-                socket.emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
-                socket.emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
-                socket.emit('ongoingSLASatisfactionTeam', yield worker.getSLASatisfactionTeam())
-                socket.emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
+                ongoing.emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
+                ongoing.emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
+                ongoing.emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
+                ongoing.emit('ongoingSLASatisfactionTeam', yield worker.getSLASatisfactionTeam())
+                ongoing.emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
+                ongoing.emit('ongoingSLASatisfaction', yield worker.getSLASatisfactionTeam(true))
+                ongoing.emit('ongoingResolution', yield worker.getResolution())
+                ongoing.emit('ongoingTotalMetrics', yield worker.totalTicketsMetrics())
             } catch (error) {
                 console.error(error)
             }
@@ -28,15 +32,16 @@ module.exports = (io) => {
     })
 
     // Emitting data for sockets on RECEIVED RULE
-    io.of('/received').on('connection', socket => {
+    const received = io.of('/received')
+    received.on('connection', socket => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected received`)
         co(function*() {
             try {
-                socket
+                received
                     .emit('receivedReceivedAndApprovedTeam', yield worker.getReceivedAndApprovedTeam())
-                socket
+                received
                     .emit('receivedGranTotal', yield worker.getGranTotal())
-                socket
+                received
                     .emit('receivedReceivedAndApprovedDept', yield worker.getReceivedAndApprovedDept())
             } catch (error) {
                 console.error(error)

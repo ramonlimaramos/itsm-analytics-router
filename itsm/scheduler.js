@@ -27,20 +27,30 @@ module.exports = () => {
                 args.io.of('ongoing')
                     .emit('ongoingSLASatisfactionTeam', yield args.worker.getSLASatisfactionTeam())
                 args.io.of('ongoing')
+                    .emit('ongoingSLASatisfaction', yield args.worker.getSLASatisfactionTeam(true))
+                args.io.of('ongoing')
                     .emit('ongoingSLAAcceptence', yield args.worker.getSLAAcceptence())
-
+                args.io.of('ongoing')
+                    .emit('ongoingResolution', yield args.worker.getResolution())
+                args.io.of('ongoing')
+                    .emit('ongoingTotalMetrics', yield args.worker.totalTicketsMetrics())
             } catch (error) {
                 console.error(error)
             }
+            return true
         })
     }
 
     methods.sockets = (io, wk) => {
         // Will emitt all sockets of ITSM every 1 min.
-        schedule.scheduleJob('1 * * * *', methods.emitAll.bind(null, {
+        schedule.scheduleJob('5 * * * * *', methods.emitAll.bind(null, {
             io: io,
             worker: wk
         }))
+    }
+
+    methods.middleware = () => {
+        // scheduler that will collect the data from ITSM
     }
 
     methods.disableAll = () => {
