@@ -58,12 +58,23 @@ const ticketSchema = new mongo.schema.Schema({
     DEPARTMENT: String
 }, { 'strict': false })
 
+const yearMetricsSchema = new mongo.schema.Schema({
+    year: { type: Number, unique: true },
+    total: Number,
+    percentNotResolved: String,
+    percentResolved: String,
+    data: []
+}, { 'strict': false })
+
 ticketSchema.plugin(mongo.paginate)
+
 const ticketModel = mongo.schema.model('ITSMData', ticketSchema)
+const yearMetricsModel = mongo.schema.model('ITSMYearMetrics', yearMetricsSchema)
 
 module.exports = () => {
     let methods = {}
 
+    // TicketSchema Methods
     methods.bulkMerge = (input) => {
         return new Promise((resolve, reject) => {
             co(function*() {
@@ -151,6 +162,27 @@ module.exports = () => {
     methods.distinct = (field) => {
         return new Promise((resolve, reject) => {
             ticketModel.distinct(field, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    // TearMetrcisSchema Methods
+    methods.setMetrics = (input) => {
+        return new Promise((resolve, reject) => {
+            let bulk = yearMetricsModel.collection.initializeOrderedBulkOp()
+            bulk.find({ year: input.year }).upsert().updateOne(input)
+            bulk.execute((err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    methods.getMetrics = (params) => {
+        return new Promise((resolve, reject) => {
+            yearMetricsModel.find(params, (err, result) => {
                 if (err) reject(err)
                 resolve(result)
             })

@@ -2,7 +2,7 @@
 
 'use strict'
 
-const config = require('config').ITSM_EAI_INTERFACE_PRD
+const config = require('config').ITSM.EAI.PRD
 const request = require('request')
 const co = require('co')
 

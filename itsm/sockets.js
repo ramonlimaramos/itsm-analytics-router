@@ -14,6 +14,7 @@ module.exports = (io) => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected ongoing`)
         co(function*() {
             try {
+                ongoing.emit('ongoingTotalMetrics', yield worker.getTotalTicketsMetrics())
                 ongoing.emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
                 ongoing.emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
                 ongoing.emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
@@ -21,7 +22,6 @@ module.exports = (io) => {
                 ongoing.emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
                 ongoing.emit('ongoingSLASatisfaction', yield worker.getSLASatisfactionTeam(true))
                 ongoing.emit('ongoingResolution', yield worker.getResolution())
-                ongoing.emit('ongoingTotalMetrics', yield worker.totalTicketsMetrics())
             } catch (error) {
                 console.error(error)
             }
@@ -32,7 +32,7 @@ module.exports = (io) => {
     })
 
     // Emitting data for sockets on RECEIVED RULE
-    const received = io.of('/received')
+    /*const received = io.of('/received')
     received.on('connection', socket => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected received`)
         co(function*() {
@@ -50,7 +50,7 @@ module.exports = (io) => {
         socket.on('disconnect', () => {
             console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} disconnected from received`)
         })
-    })
+    })*/
 
     // Starting Emittion Scheduler for each socket
     scheduler.sockets(io, worker)

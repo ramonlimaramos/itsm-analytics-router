@@ -13,6 +13,10 @@ module.exports = (app) => {
     app.post('/api/itsm-analytics/v1/tickets', router.mergeTicket)
     app.get('/api/itsm-analytics/v1/ticket/:id', router.ticketDetail)
 
+    app.get('/api/itsm-analytics/v1/tickets/total/year', router.total)
+    app.get('/api/itsm-analytics/v1/tickets/haeb', router.notAcceptedHaeb)
+    app.get('/api/itsm-analytics/v1/tickets/delay', router.resolutionDelay)
+
     // Front-End Routes
     app.get('/itsm-analytics/', (req, res, next) => {
         res.render('pages/index')

@@ -2,23 +2,9 @@ EXPRESS:
     base_url: 'http://10.127.38.210:5111/itsm-analytics/'
     socket_url: 'http://10.127.38.210:5111'
 
-ITSM:
-    period_delay: 90
-    hours_reduce: 11
-
 SOCKET:
     rememberTransport: false
     transports: ['WebSocket', 'Flash Socket', 'AJAX long-polling']
-
-ITSM_EAI_INTERFACE_DEV:
-  endpointSync: 'http://10.121.241.117:5200/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
-  user: 'ramon'
-  password: '123456'
-
-ITSM_EAI_INTERFACE_PRD:
-  endpointSync: 'http://10.121.241.115:5100/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
-  user: 'ramon'
-  password: '995421'
 
 ERROR_MSG:
   403: 'Invalid parameters'
@@ -53,3 +39,23 @@ MONGO:
     msg:
         bulkupdated: 
             result: 'Records were upserted with success result'
+
+ITSM:
+    period_delay: 90
+    hours_reduce: 11
+    sch_eai:
+        min: 5
+    sch_metrics:
+        min: 3
+        sec: 20
+    sch_sockets: 
+        sec: 40
+    EAI:
+        PRD:
+            endpointSync: 'http://10.121.241.115:5100/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
+            user: 'ramon'
+            password: '995421'
+        DEV:
+            endpointSync: 'http://10.121.241.117:5200/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
+            user: 'ramon'
+            password: '123456'

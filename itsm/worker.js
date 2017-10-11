@@ -398,31 +398,26 @@ module.exports = () => {
         })
     }
 
-    methods.totalTicketsMetrics = () => {
+    methods.setTotalTicketsMetrics = () => {
         return co(function*() {
             let result = {}
             try {
                 let months = methods.getMonthsByRange([
                         ...Array(parseInt(moment().format('MM'))).keys()
                     ]),
-
                     query = yield itsm.findAll({
                         OPEN_DATE: new RegExp(moment().format('YYYY'))
                     }),
-
                     totalYearOpen = query.filter(o => {
                         return o.STEP !== "Closed (Reject)" && o.STEP !== "Cancel"
                     }).length,
-
-                    totalResolved = query.filter(o => o.STEP == "Closed").length
+                    totalResolved = query.filter(o => o.STEP == "Closed").length,
+                    tempData = []
 
                 months.pop()
-
                 result.total = totalYearOpen
                 result.percentResolved = ((totalResolved / totalYearOpen) * 100).toFixed(2)
                 result.percentNotResolved = (100 - result.percentResolved).toFixed(2)
-                result.data = []
-
                 months.forEach((obj, idx) => {
                     let currMonth = query.filter(o => {
                         return moment().month(moment(o.OPEN_DATE).format('MMM'), 'months')
@@ -433,8 +428,13 @@ module.exports = () => {
                     obj.resolved = currMonth.filter(o => o.STEP == "Closed").length
                     obj.notResolved = currMonth.filter(o => o.STEP !== "Closed").length
 
-                    result.data.push(obj)
+                    tempData.push(obj)
                 })
+                result.data = tempData.reverse()
+                result.year = parseInt(moment().format('YYYY-MM-DD'))
+
+                yield itsm.setMetrics(result) //setting cache
+
             } catch (error) {
                 console.log(error)
                 throw error
@@ -443,5 +443,20 @@ module.exports = () => {
             return result
         })
     }
+
+    methods.getTotalTicketsMetrics = (year) => {
+        return co(function*() {
+            let result
+            try {
+                year = year || parseInt(moment().format('YYYY'))
+                result = yield itsm.getMetrics({ year: year })
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+            return result[0]
+        })
+    }
+
     return methods
 }

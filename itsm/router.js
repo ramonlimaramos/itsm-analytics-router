@@ -6,6 +6,7 @@ const wrap = require('co-express')
 const itsm = require('../middleware')()
 const ticket = require('./model')()
 const validation = require('./validation')()
+const worker = require('./worker')()
 
 module.exports = (io) => {
     const controller = {}
@@ -40,6 +41,46 @@ module.exports = (io) => {
             if (!isNull)
                 result = yield ticket.bulkMerge(req.body.results)
         } catch (err) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.total = wrap(function*(req, res, next) {
+        let result
+        try {
+            result = yield worker.totalTicketsMetrics()
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.resolutionDelay = wrap(function*(req, res, next) {
+        let result
+        try {
+            result = yield worker.getResolutionDelay()
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.notAcceptedHaeb = wrap(function*(req, res, next) {
+        let result
+        try {
+            result = yield worker.getNotAcceptedHaeb()
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.periodDaysDelayed = wrap(function*(req, res, next) {
+        let result
+        try {
+            result = yield worker.getPeriodDaysDelayed()
+        } catch (error) {
             return res.status(403).json(err)
         }
         return res.json(result)
