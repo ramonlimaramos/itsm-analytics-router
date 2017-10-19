@@ -3,6 +3,7 @@
 'use strict'
 
 const path = require('path')
+const compression = require('compression')
 
 const express = require('express')
 const config = require('config')
@@ -12,6 +13,7 @@ const bodyParser = require('body-parser')
 
 module.exports = () => {
     const app = express()
+    app.use(compression())
     app.set('port', process.env.PORT || 5111)
     app.use(auth.initialize())
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))

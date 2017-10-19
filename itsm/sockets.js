@@ -32,7 +32,7 @@ module.exports = (io) => {
     })
 
     // Emitting data for sockets on RECEIVED RULE
-    /*const received = io.of('/received')
+    const received = io.of('/received')
     received.on('connection', socket => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected received`)
         co(function*() {
@@ -50,7 +50,7 @@ module.exports = (io) => {
         socket.on('disconnect', () => {
             console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} disconnected from received`)
         })
-    })*/
+    })
 
     // Starting Emittion Scheduler for each socket
     scheduler.sockets(io, worker)

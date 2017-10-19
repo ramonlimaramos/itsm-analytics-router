@@ -3,4 +3,6 @@ views
 public
 temp
 .bowerrc
+.jshintrc
 bower.json
+.gitignore

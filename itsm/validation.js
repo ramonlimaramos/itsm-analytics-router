@@ -74,7 +74,7 @@ module.exports = () => {
                     RESOLUTION: obj.RESOLUTION.toString(),
                     REASON_CODE: obj.REASON_CODE.toString(),
                     RESOLUTION_CODE: obj.RESOLUTION_CODE.toString(),
-                    OPERATING_TEAM: obj.OPERATING_TEAM.toString(),
+                    OPERATING_TEAM: methods.mergeErpTeamStr(obj.OPERATING_TEAM.toString()),
                     ASSIGNEE_P_ID: obj.ASSIGNEE_P_ID.toString(),
                     ASSIGNEE_P: obj.ASSIGNEE_P.toString(),
                     ASSIGNEE_S: obj.ASSIGNEE_S.toString(),
@@ -108,7 +108,12 @@ module.exports = () => {
 
         return obj.match(regex) ? moment(obj)
             .subtract(itsmConf.hours_reduce, 'h')
-            .format('YYYY-MM-DD hh:mm:ss') : ''
+            .format('YYYY-MM-DD HH:mm:ss') : ''
+    }
+
+    methods.mergeErpTeamStr = (str) => {
+        return itsmConf.teams_to_erp.indexOf(str) > -1 ?
+            'ERP Service' : str
     }
 
     return methods

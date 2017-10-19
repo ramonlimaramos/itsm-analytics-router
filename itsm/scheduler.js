@@ -51,7 +51,7 @@ module.exports = () => {
                 ENDDATE,
                 timeOccur
             try {
-                STARTDATE = moment().startOf('year').format('YYYY-MM-DD')
+                STARTDATE = moment().subtract(1, 'y').format('YYYY-MM-DD')
                 ENDDATE = moment().add(1, 'd').format('YYYY-MM-DD')
                 timeOccur = moment().format('YYYY-MM-DD hh:mm')
 

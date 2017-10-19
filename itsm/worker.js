@@ -29,9 +29,14 @@ module.exports = () => {
         return new Promise((resolve, reject) => {
             let teams = methods.getTeams(),
                 current_year = { key: moment().format('YYYY') },
-                months = methods.getMonthsByRange([3, 2, 1])
+                months = methods.getMonthsByRange([
+                    ...Array(parseInt(moment().format('MM'))).keys()
+                ])
 
-            let getData = () => { // GetData Generator
+            months.pop()
+            months = months.reverse()
+
+            const getData = () => { // GetData Generator
                 return co(function*() {
                     let data = []
                     try {
@@ -55,7 +60,7 @@ module.exports = () => {
                 })
             }
 
-            let getDataHighCharts = (data) => { // GetData Highcharts Generator
+            const getDataHighCharts = (data) => { // GetData Highcharts Generator
                 return co(function*() {
                     let highcharts = {}
                     try {
@@ -97,12 +102,17 @@ module.exports = () => {
     methods.getReceivedAndApprovedDept = (params) => {
         return new Promise((resolve, reject) => {
             let current_year = moment().format('YYYY'),
-                months = methods.getMonthsByRange([3, 2, 1]),
+                months = methods.getMonthsByRange([
+                    ...Array(parseInt(moment().format('MM'))).keys()
+                ]),
                 openDate = months.map((e => {
                     return new RegExp(`${current_year}-${e.key}`)
                 }))
 
-            let getData = () => { // GetData Generator
+            months.pop()
+            months = months.reverse()
+
+            const getData = () => { // GetData Generator
                 return co(function*() {
                     let data = []
                     try {
@@ -135,7 +145,7 @@ module.exports = () => {
                 })
             }
 
-            let getDataHighCharts = (data) => { // GetData Highcharts Generator
+            const getDataHighCharts = (data) => { // GetData Highcharts Generator
                 return co(function*() {
                     let highcharts = {}
                     try {
@@ -216,7 +226,7 @@ module.exports = () => {
                     $orderby: { OPEN_DATE: 1 }
                 })
                 for (let res of result.notDelayed) {
-                    let compareDate = moment(res.OPEN_DATE).add(1, "d")
+                    let compareDate = moment(res.OPEN_DATE).add(24, "h")
                     if (compareDate.isBefore(moment()))
                         delayed.push(res)
                 }
@@ -455,6 +465,23 @@ module.exports = () => {
                 throw error
             }
             return result[0]
+        })
+    }
+
+
+    methods.getOpenTickets = (options) => {
+        return co(function*() {
+            try {
+                return yield itsm.findAll({
+                    $nor: [
+                        { STEP: "Closed" },
+                        { STEP: "Closed (Reject)" }
+                    ]
+                })
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
         })
     }
 

@@ -86,5 +86,19 @@ module.exports = (io) => {
         return res.json(result)
     })
 
+    controller.open = wrap(function*(req, res, next) {
+        let result
+        try {
+            result = yield worker.getOpenTickets(req.query)
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.render = wrap(function*(req, res, next) {
+
+    })
+
     return controller
 }
