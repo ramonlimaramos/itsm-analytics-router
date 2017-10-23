@@ -6,3 +6,4 @@ temp
 .jshintrc
 bower.json
 .gitignore
+package.json

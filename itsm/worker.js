@@ -275,7 +275,7 @@ module.exports = () => {
                 let query = {
                     $query: {
                         $and: [
-                            { TARGET_DATE: { $lte: `${today} 00:00:00.0` } },
+                            { TARGET_DATE: { $lte: `${today} 00:00:00` } },
                             {
                                 $nor: [
                                     { STEP: "New" },
