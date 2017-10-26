@@ -23,7 +23,7 @@ module.exports = (app) => {
         res.render('pages/index', { cache: 'pages/index' })
     })
     app.get('/itsm-analytics/received', (req, res, next) => {
-        res.render('pages/received')
+        res.render('pages/received', { cache: 'pages/received' })
     })
     app.get('/itsm-analytics/ongoing', (req, res, next) => {
         res.render('pages/ongoing', { cache: 'pages/ongoing' })

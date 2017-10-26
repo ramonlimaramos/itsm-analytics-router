@@ -43,6 +43,7 @@ MONGO:
 ITSM:
     period_delay: 90
     teams_to_erp: ["HMB SAP Accounting IT Team", "HMB SAP Production IT Team", "HMB SAP Sales IT Team", "HMB SAP Technical IT Team"]
+    current_teams: ['Infra Service', 'ERP Service', 'CRM Service', 'MES Service']    
     hours_reduce: 11
     sch_eai:
         min: 5

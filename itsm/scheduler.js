@@ -13,6 +13,12 @@ module.exports = () => {
     methods.emitAll = (args) => {
         return co(function*() {
             try {
+                // Resolved Invokers
+                args.io.of('resolved')
+                    .emit('resolvedAvgTimeResolution', yield worker.getResolvedAvgTimeResolution())
+                args.io.of('resolved')
+                    .emit('resolvedQtdTimeResolution', yield worker.getResolvedQtdTimeResolution())
+
                 // Received Invokers
                 args.io.of('received')
                     .emit('receivedReceivedAndApprovedTeam', yield worker.getReceivedAndApprovedTeam())

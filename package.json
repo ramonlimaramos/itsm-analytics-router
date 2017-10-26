@@ -1,34 +1,35 @@
 {
-    "name": "itsm-analytics-router",
-    "version": "1.0.0",
-    "description": "System responsible to connect to ITSM and retrive the data for analysis",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node index.js"
-    },
-    "author": "Ramon de Lima Ramos",
-    "license": "MIT",
-    "dependencies": {
-        "body-parser": "^1.17.1",
-        "co": "^4.6.0",
-        "co-express": "^2.0.0",
-        "compression": "^1.7.1",
-        "config": "^1.25.1",
-        "ejs": "^2.5.7",
-        "express": "^4.15.2",
-        "js-yaml": "^3.8.2",
-        "method-override": "^2.3.8",
-        "moment": "^2.18.1",
-        "mongodb-uri": "^0.9.7",
-        "mongoose": "^4.4.3",
-        "mongoose-moment": "^0.1.3",
-        "mongoose-paginate": "^5.0.0",
-        "node-schedule": "^1.2.5",
-        "passport": "^0.3.2",
-        "passport-jwt": "^2.2.1",
-        "querystring": "^0.2.0",
-        "request": "^2.81.0",
-        "socket.io": "^2.0.3"
-    }
+  "name": "itsm-analytics-router",
+  "version": "1.0.0",
+  "description": "System responsible to connect to ITSM and retrive the data for analysis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Ramon de Lima Ramos",
+  "license": "MIT",
+  "dependencies": {
+    "average": "^0.1.0",
+    "body-parser": "^1.17.1",
+    "co": "^4.6.0",
+    "co-express": "^2.0.0",
+    "compression": "^1.7.1",
+    "config": "^1.25.1",
+    "ejs": "^2.5.7",
+    "express": "^4.15.2",
+    "js-yaml": "^3.8.2",
+    "method-override": "^2.3.8",
+    "moment": "^2.18.1",
+    "mongodb-uri": "^0.9.7",
+    "mongoose": "^4.4.3",
+    "mongoose-moment": "^0.1.3",
+    "mongoose-paginate": "^5.0.0",
+    "node-schedule": "^1.2.5",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "querystring": "^0.2.0",
+    "request": "^2.81.0",
+    "socket.io": "^2.0.3"
+  }
 }

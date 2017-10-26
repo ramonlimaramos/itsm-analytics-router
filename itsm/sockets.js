@@ -52,6 +52,25 @@ module.exports = (io) => {
         })
     })
 
+    // Emitting data for sockets on RESOLVED RULE
+    const resolved = io.of('/resolved')
+    resolved.on('connection', socket => {
+        console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected resolved`)
+        co(function*() {
+            try {
+                resolved
+                    .emit('resolvedAvgTimeResolution', yield worker.getResolvedAvgTimeResolution())
+                resolved
+                    .emit('resolvedQtdTimeResolution', yield worker.getResolvedQtdTimeResolution())
+            } catch (error) {
+                console.error(error)
+            }
+        })
+        socket.on('disconnect', () => {
+            console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} disconnected from resolved`)
+        })
+    })
+
     // Starting Emittion Scheduler for each socket
     scheduler.sockets(io, worker)
 }

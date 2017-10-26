@@ -2,13 +2,15 @@
 
 const co = require('co')
 const config = require('config').ITSM
+const avg = require('average')
 const moment = require('moment')
 const itsm = require('./model')()
 
 module.exports = () => {
     const methods = {}
 
-    methods.getMonthsByRange = (range) => {
+    // PRIVATE Methods
+    methods._getMonthsByRange = (range) => {
         let monthsQuantity = range,
             current_month = { key: moment().format('MM'), val: moment().format('MMM') },
             months = monthsQuantity.map(m => {
@@ -21,20 +23,26 @@ module.exports = () => {
         return months
     }
 
-    methods.getTeams = () => {
-        return ['Infra Service', 'ERP Service', 'CRM Service', 'MES Service']
+    methods._getMonthsRangeUntilActual = () => {
+        let current_year = { key: moment().format('YYYY') },
+            months = methods._getMonthsByRange([
+                ...Array(parseInt(moment().format('MM'))).keys()
+            ])
+
+        months.pop()
+        return months.reverse()
     }
 
+    methods._getTeams = () => {
+        return config.current_teams
+    }
+
+    // RECEIVED
     methods.getReceivedAndApprovedTeam = (params) => {
         return new Promise((resolve, reject) => {
-            let teams = methods.getTeams(),
-                current_year = { key: moment().format('YYYY') },
-                months = methods.getMonthsByRange([
-                    ...Array(parseInt(moment().format('MM'))).keys()
-                ])
-
-            months.pop()
-            months = months.reverse()
+            let teams = methods._getTeams(),
+                months = methods._getMonthsRangeUntilActual(),
+                current_year = { key: moment().format('YYYY') }
 
             const getData = () => { // GetData Generator
                 return co(function*() {
@@ -42,14 +50,14 @@ module.exports = () => {
                     try {
                         for (let team of teams) {
                             for (let month of months) {
-                                let query = {}
-                                query.OPEN_DATE = new RegExp(`${current_year.key}-${month.key}`)
-                                query.OPERATING_TEAM = team
-                                let obj = {}
-                                obj.team = team
-                                obj.month = month
-                                obj.count = yield itsm.count(query)
-                                data.push(obj)
+                                data.push({
+                                    team: team,
+                                    month: month,
+                                    count: yield itsm.count({
+                                        OPEN_DATE: new RegExp(`${current_year.key}-${month.key}`),
+                                        OPERATING_TEAM: team
+                                    })
+                                })
                             }
                         }
                     } catch (error) {
@@ -102,12 +110,10 @@ module.exports = () => {
     methods.getReceivedAndApprovedDept = (params) => {
         return new Promise((resolve, reject) => {
             let current_year = moment().format('YYYY'),
-                months = methods.getMonthsByRange([
+                months = methods._getMonthsByRange([
                     ...Array(parseInt(moment().format('MM'))).keys()
                 ]),
-                openDate = months.map((e => {
-                    return new RegExp(`${current_year}-${e.key}`)
-                }))
+                openDate = months.map((e => new RegExp(`${current_year}-${e.key}`)))
 
             months.pop()
             months = months.reverse()
@@ -191,8 +197,8 @@ module.exports = () => {
     methods.getGranTotal = () => {
         return co(function*() {
             let year = moment().format('YYYY'),
-                months = methods.getMonthsByRange([2, 1]),
-                query = { OPERATING_TEAM: { $in: methods.getTeams() } },
+                months = methods._getMonthsByRange([2, 1]),
+                query = { OPERATING_TEAM: { $in: methods._getTeams() } },
                 result = []
 
             try {
@@ -216,6 +222,76 @@ module.exports = () => {
         })
     }
 
+    // RESOLVED
+    methods.getResolvedAvgTimeResolution = () => {
+        return co(function*() {
+            try {
+                let currentYear = moment().format('YYYY'),
+                    months = methods._getMonthsRangeUntilActual()
+
+                for (let monthObj of months) {
+                    monthObj.data = []
+                    for (let currentTeam of methods._getTeams()) {
+                        let queryResult = yield itsm.findAll({
+                            STEP: "Closed",
+                            OPERATING_TEAM: currentTeam,
+                            CLOSED_DATE: new RegExp(`${currentYear}-${monthObj.key}`)
+                        })
+
+                        monthObj.data.push({
+                            team: currentTeam,
+                            val: avg(queryResult.map(elem => {
+                                return moment(elem.CLOSED_DATE)
+                                    .diff(moment(elem.OPEN_DATE), 'days')
+                            }))
+                        })
+                    }
+                }
+
+                return months
+
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+        })
+    }
+
+    methods.getResolvedQtdTimeResolution = () => {
+        return co(function*() {
+            try {
+                let currentYear = moment().format('YYYY'),
+                    months = methods._getMonthsRangeUntilActual()
+
+                for (let monthObj of months) {
+                    monthObj.data = []
+                    for (let currentTeam of methods._getTeams()) {
+                        let queryResult = yield itsm.findAll({
+                            STEP: "Closed",
+                            OPERATING_TEAM: currentTeam,
+                            CLOSED_DATE: new RegExp(`${currentYear}-${monthObj.key}`)
+                        })
+                        let temp = queryResult.map(elem =>
+                            moment(elem.TARGET_DATE).isBefore(moment(elem.RESOLVED_DATE))
+                        )
+
+                        monthObj.data.push({
+                            team: currentTeam,
+                            val: temp.filter(o => o == true).length
+                        })
+                    }
+                }
+
+                return months
+
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+        })
+    }
+
+    // ON GOING
     methods.getNotAcceptedHaeb = () => {
         return co(function*() {
             let result = {}
@@ -319,7 +395,7 @@ module.exports = () => {
                 let data = yield itsm.aggregate(query)
                 result = (all) ? data[0] : {
                     currentTeams: methods
-                        .getTeams()
+                        ._getTeams()
                         .map(t => {
                             return data.filter(obj => { return obj._id == t })[0]
                         })
@@ -412,7 +488,7 @@ module.exports = () => {
         return co(function*() {
             let result = {}
             try {
-                let months = methods.getMonthsByRange([
+                let months = methods._getMonthsByRange([
                         ...Array(parseInt(moment().format('MM'))).keys()
                     ]),
                     query = yield itsm.findAll({
@@ -467,7 +543,6 @@ module.exports = () => {
             return result[0]
         })
     }
-
 
     methods.getOpenTickets = (options) => {
         return co(function*() {
