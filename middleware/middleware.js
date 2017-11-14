@@ -18,6 +18,7 @@ module.exports = () => {
                     result = yield middleware.request(auth, input)
                 } catch (error) {
                     reject(error)
+                    throw new Error(error)
                 }
 
                 resolve(result)

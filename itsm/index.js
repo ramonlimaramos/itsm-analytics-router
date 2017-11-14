@@ -6,7 +6,7 @@ const path = require('path')
 const itsm = require('./router')
 
 module.exports = (app) => {
-    const router = itsm(app.get('io')) //setting socketio for every route
+    const router = itsm(app)
 
     // API Routes
     app.get('/api/itsm-analytics/v1/tickets', router.ticket)

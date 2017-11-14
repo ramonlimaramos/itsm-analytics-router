@@ -7,6 +7,7 @@ const co = require('co')
 const config = require('config').MONGO.msg
 const mongo = require('../config/mongo')()
 const validation = require('./validation')()
+const moment = require('moment')
 
 const ticketSchema = new mongo.schema.Schema({
     ID: { type: String, unique: true },
@@ -81,29 +82,30 @@ module.exports = () => {
                 let bulk = ticketModel.collection.initializeOrderedBulkOp(),
                     sizeTickets = input.length,
                     counter = 0
+                console.log(`############## upserting: ${sizeTickets} - ${moment().format('HH:mm:ss')}`)
                 try {
-                    for (let index = 0; index < sizeTickets; index++) {
-                        let obj = yield validation.renderTicket(input[index])
+                    for (let doc of input) {
+                        let obj = yield validation.renderTicket(doc)
                         bulk.find({ ID: obj.ID }).upsert().updateOne(obj)
                         counter++
 
                         if (counter % 1000 == 0)
                             bulk.execute((err, result) => {
-                                if (err) reject(err)
+                                if (err) return reject(err)
                                 bulk = ticketModel.collection.initializeOrderedBulkOp()
                             })
                     }
 
                     if (counter % 1000 != 0)
                         bulk.execute((err, result) => {
-                            if (err) reject(err)
-                            resolve(config.bulkupdated)
+                            if (err) return reject(err)
+                            return resolve(config.bulkupdated)
                         })
                 } catch (error) {
-                    console.log(error)
                     reject(error)
+                    throw new Error(error)
                 }
-                return true
+                console.log(`############## upsert done - ${moment().format('HH:mm:ss')}`)
             })
         })
     }
