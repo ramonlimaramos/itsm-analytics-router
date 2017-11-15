@@ -6,6 +6,7 @@ const path = require('path')
 const compression = require('compression')
 
 const express = require('express')
+const templateEngine = require('express-dot-engine')
 const config = require('config')
 const itsm = require('../itsm')
 const auth = require('../auth')()
@@ -21,8 +22,9 @@ module.exports = () => {
     app.use(require('method-override')())
     app.disable('x-powered-by')
     app.use('/itsm-analytics', express.static(path.join(__dirname, '../public')))
-    app.set('view engine', 'ejs')
-    app.locals = config.EXPRESS
+    app.engine('dot', templateEngine.__express)
+    app.set('views', path.join(__dirname, '../views'))
+    app.set('view engine', 'dot')
     app.use((req, res, next) => { // API Cross Domain
         res.header("Access-Control-Allow-Origin", "*")
         res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")

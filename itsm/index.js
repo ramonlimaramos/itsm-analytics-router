@@ -2,6 +2,7 @@
 
 'use strict'
 
+const renderProp = require('config').EXPRESS
 const path = require('path')
 const itsm = require('./router')
 
@@ -20,27 +21,27 @@ module.exports = (app) => {
 
     // Front-End Routes
     app.get('/itsm-analytics/', (req, res, next) => {
-        res.render('pages/index', { cache: 'pages/index' })
+        res.render('pages/index', renderProp)
     })
     app.get('/itsm-analytics/received', (req, res, next) => {
-        res.render('pages/received', { cache: 'pages/received' })
+        res.render('pages/received', renderProp)
     })
     app.get('/itsm-analytics/ongoing', (req, res, next) => {
-        res.render('pages/ongoing', { cache: 'pages/ongoing' })
+        res.render('pages/ongoing', renderProp)
     })
     app.get('/itsm-analytics/ongoing/not-accepted-by-haeb', (req, res, next) => {
-        res.render('pages/ongoing-notaccepthaeb', { cache: 'pages/ongoing-notaccepthaeb' })
+        res.render('pages/ongoing-notaccepthaeb', renderProp)
     })
     app.get('/itsm-analytics/ongoing/delayed-more-than-nighteen-days', (req, res, next) => {
-        res.render('pages/ongoing-90days', { cache: 'pages/ongoing-90days' })
+        res.render('pages/ongoing-90days', renderProp)
     })
     app.get('/itsm-analytics/ongoing/resolution-delay', (req, res, next) => {
-        res.render('pages/ongoing-resolutiondelay', { cache: 'pages/ongoing-resolutiondelay' })
+        res.render('pages/ongoing-resolutiondelay', renderProp)
     })
     app.get('/itsm-analytics/resolved', (req, res, next) => {
-        res.render('pages/resolved', { cache: 'pages/resolved' })
+        res.render('pages/resolved', renderProp)
     })
     app.get('/itsm-analytics/open', (req, res, next) => {
-        res.render('pages/open', { cache: 'pages/open' })
+        res.render('pages/open', renderProp)
     })
 }
