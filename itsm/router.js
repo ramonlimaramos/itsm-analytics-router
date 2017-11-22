@@ -5,7 +5,7 @@
 const wrap = require('co-express')
 const co = require('co')
 const moment = require('moment')
-const itsm = require('../middleware')()
+const middleware = require('../middleware')()
 const ticket = require('./model')()
 const validation = require('./validation')()
 const worker = require('./worker')()
@@ -17,9 +17,9 @@ module.exports = (app) => {
         return co(function*() {
             try {
                 let m = moment().format('HH:mm')
-                app.get('io').of('ongoing').emit('lastExecutionMiddleware', m)
-                app.get('io').of('received').emit('lastExecutionMiddleware', m)
-                app.get('io').of('resolved').emit('lastExecutionMiddleware', m)
+                app.get('io').sockets.emit('lastExecutionMiddleware', m)
+                app.get('io').sockets.emit('lastExecutionMiddleware', m)
+                app.get('io').sockets.emit('lastExecutionMiddleware', m)
             } catch (error) {
                 console.log(error)
                 throw error
@@ -32,7 +32,7 @@ module.exports = (app) => {
         let result, input
         try {
             input = yield validation.isQueryValid(req.query)
-            result = yield itsm.execute(input)
+            result = yield middleware.execute(input)
         } catch (err) {
             return res.status(403).json(err)
         }
@@ -42,7 +42,7 @@ module.exports = (app) => {
     controller.ticketDetail = wrap(function*(req, res, next) {
         let result
         try {
-            result = yield itsm.execute()
+            result = yield middleware.execute()
         } catch (err) {
             return res.status(403).json(err)
         }
@@ -65,6 +65,22 @@ module.exports = (app) => {
         return res.json(result)
     })
 
+    controller.sumary = wrap(function*(req, res, next) {
+        let result = {}
+        try {
+            result.notAcceptedHaeb = yield worker.getNotAcceptedHaeb()
+            result.periodDaysDelayed = yield worker.getPeriodDaysDelayed()
+            result.resolutionDelay = yield worker.getResolutionDelay()
+            result.slaSatisfaction = yield worker.getSLASatisfactionTeam(true)
+            result.slaAcceptence = yield worker.getSLAAcceptence()
+            result.slaResolution = yield worker.getResolution()
+            result.metrics = yield worker.getTotalTicketsMetrics()
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
     controller.total = wrap(function*(req, res, next) {
         let result
         try {
@@ -79,6 +95,16 @@ module.exports = (app) => {
         let result
         try {
             result = yield worker.getResolutionDelay()
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.periodDelay = wrap(function*(req, res, next) {
+        let result
+        try {
+            result = yield worker.getPeriodDaysDelayed()
         } catch (error) {
             return res.status(403).json(err)
         }
@@ -105,6 +131,29 @@ module.exports = (app) => {
         return res.json(result)
     })
 
+    controller.received = wrap(function*(req, res, next) {
+        let result = {}
+        try {
+            result.team = yield worker.getReceivedAndApprovedTeam()
+            result.dept = yield worker.getReceivedAndApprovedDept()
+        } catch (err) {
+            console.log(err)
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
+    controller.resolved = wrap(function*(req, res, next) {
+        let result = {}
+        try {
+            result.qty = yield worker.getResolvedQtdTimeResolution()
+            result.avg = yield worker.getResolvedAvgTimeResolution()
+        } catch (err) {
+            return res.status(403).json(err)
+        }
+        return res.json(result)
+    })
+
     controller.open = wrap(function*(req, res, next) {
         let result
         try {
@@ -114,8 +163,6 @@ module.exports = (app) => {
         }
         return res.json(result)
     })
-
-    controller.render = wrap(function*(req, res, next) {})
 
     return controller
 }

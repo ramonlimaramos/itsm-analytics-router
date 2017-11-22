@@ -14,14 +14,14 @@ module.exports = (io) => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected ongoing`)
         co(function*() {
             try {
-                ongoing.emit('ongoingTotalMetrics', yield worker.getTotalTicketsMetrics())
-                ongoing.emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
-                ongoing.emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
-                ongoing.emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
-                ongoing.emit('ongoingSLASatisfactionTeam', yield worker.getSLASatisfactionTeam())
-                ongoing.emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
-                ongoing.emit('ongoingSLASatisfaction', yield worker.getSLASatisfactionTeam(true))
-                ongoing.emit('ongoingResolution', yield worker.getResolution())
+                ongoing.volatile.emit('ongoingTotalMetrics', yield worker.getTotalTicketsMetrics())
+                ongoing.volatile.emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
+                ongoing.volatile.emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
+                ongoing.volatile.emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
+                ongoing.volatile.emit('ongoingSLASatisfactionTeam', yield worker.getSLASatisfactionTeam())
+                ongoing.volatile.emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
+                ongoing.volatile.emit('ongoingSLASatisfaction', yield worker.getSLASatisfactionTeam(true))
+                ongoing.volatile.emit('ongoingResolution', yield worker.getResolution())
             } catch (error) {
                 console.error(error)
             }
@@ -37,9 +37,9 @@ module.exports = (io) => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected received`)
         co(function*() {
             try {
-                received
+                received.volatile
                     .emit('receivedReceivedAndApprovedTeam', yield worker.getReceivedAndApprovedTeam())
-                received
+                received.volatile
                     .emit('receivedGranTotal', yield worker.getGranTotal())
                 received
                     .emit('receivedReceivedAndApprovedDept', yield worker.getReceivedAndApprovedDept())
@@ -58,9 +58,9 @@ module.exports = (io) => {
         console.log(`ITSM Analytics host-client ${socket.request.socket.remoteAddress} connected resolved`)
         co(function*() {
             try {
-                resolved
+                resolved.volatile
                     .emit('resolvedAvgTimeResolution', yield worker.getResolvedAvgTimeResolution())
-                resolved
+                resolved.volatile
                     .emit('resolvedQtdTimeResolution', yield worker.getResolvedQtdTimeResolution())
             } catch (error) {
                 console.error(error)

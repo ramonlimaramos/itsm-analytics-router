@@ -170,7 +170,7 @@ module.exports = () => {
         })
     }
 
-    // TearMetrcisSchema Methods
+    // YearMetrcisSchema Methods
     methods.setMetrics = (input) => {
         return new Promise((resolve, reject) => {
             let bulk = yearMetricsModel.collection.initializeOrderedBulkOp()

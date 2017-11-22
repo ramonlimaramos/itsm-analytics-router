@@ -1,5 +1,5 @@
 EXPRESS:
-    base_url: 'http://10.127.38.210:5111/itsm-analytics/'
+    base_url: '/itsm-analytics/'
     socket_url: 'http://10.127.38.210:5111'
 
 SOCKET:
@@ -51,7 +51,8 @@ ITSM:
         min: 3
         sec: 20
     sch_sockets: 
-        sec: 40
+        sec: 60
+        min: 7
     EAI:
         PRD:
             endpointSync: 'http://10.121.241.115:5100/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'

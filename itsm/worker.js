@@ -11,24 +11,21 @@ module.exports = () => {
 
     // PRIVATE Methods
     methods._getMonthsByRange = (range) => {
-        let monthsQuantity = range,
-            current_month = { key: moment().format('MM'), val: moment().format('MMM') },
-            months = monthsQuantity.map(m => {
-                let month = {}
-                month.key = moment().subtract(m, 'months').format('MM')
-                month.val = moment().subtract(m, 'months').format('MMM')
-                return month
+        let current_month = { key: moment().format('MM'), val: moment().format('MMM') },
+            months = range.map(m => {
+                return {
+                    key: moment().subtract(m, 'months').format('MM'),
+                    val: moment().subtract(m, 'months').format('MMM')
+                }
             })
         months.push(current_month)
         return months
     }
 
     methods._getMonthsRangeUntilActual = () => {
-        let current_year = { key: moment().format('YYYY') },
-            months = methods._getMonthsByRange([
-                ...Array(parseInt(moment().format('MM'))).keys()
-            ])
-
+        let months = methods._getMonthsByRange([
+            ...Array(parseInt(moment().format('MM'))).keys()
+        ])
         months.pop()
         return months.reverse()
     }
@@ -75,13 +72,13 @@ module.exports = () => {
                         highcharts.categories = teams.map(t => { return t })
                         highcharts.series = []
                         for (let month of months) {
-                            let serie = {}
-                            serie.name = month.val
-                            serie.data = teams.map((t, i) => {
-                                return data.filter(obj => obj.team == t &&
-                                    obj.month.val == month.val)[0].count
+                            highcharts.series.push({
+                                name: month.val,
+                                data: teams.map((t, i) => {
+                                    return data.filter(obj => obj.team == t &&
+                                        obj.month.val == month.val)[0].count
+                                })
                             })
-                            highcharts.series.push(serie)
                         }
                     } catch (error) {
                         console.log(error)
@@ -226,8 +223,7 @@ module.exports = () => {
     methods.getResolvedAvgTimeResolution = () => {
         return co(function*() {
             try {
-                let currentYear = moment().format('YYYY'),
-                    months = methods._getMonthsRangeUntilActual()
+                let months = methods._getMonthsRangeUntilActual()
 
                 for (let monthObj of months) {
                     monthObj.data = []
@@ -235,15 +231,15 @@ module.exports = () => {
                         let queryResult = yield itsm.findAll({
                             STEP: "Closed",
                             OPERATING_TEAM: currentTeam,
-                            CLOSED_DATE: new RegExp(`${currentYear}-${monthObj.key}`)
+                            CLOSED_DATE: new RegExp(`${moment().format('YYYY')}-${monthObj.key}`)
                         })
 
                         monthObj.data.push({
                             team: currentTeam,
-                            val: avg(queryResult.map(elem => {
-                                return moment(elem.CLOSED_DATE)
-                                    .diff(moment(elem.OPEN_DATE), 'days')
-                            }))
+                            val: avg(queryResult.map(elem =>
+                                moment(elem.CLOSED_DATE)
+                                .diff(moment(elem.OPEN_DATE), 'days')
+                            ))
                         })
                     }
                 }
@@ -260,24 +256,23 @@ module.exports = () => {
     methods.getResolvedQtdTimeResolution = () => {
         return co(function*() {
             try {
-                let currentYear = moment().format('YYYY'),
-                    months = methods._getMonthsRangeUntilActual()
+                let months = methods._getMonthsRangeUntilActual()
 
                 for (let monthObj of months) {
                     monthObj.data = []
+
                     for (let currentTeam of methods._getTeams()) {
                         let queryResult = yield itsm.findAll({
                             STEP: "Closed",
                             OPERATING_TEAM: currentTeam,
-                            CLOSED_DATE: new RegExp(`${currentYear}-${monthObj.key}`)
+                            CLOSED_DATE: new RegExp(`${moment().format('YYYY')}-${monthObj.key}`)
                         })
-                        let temp = queryResult.map(elem =>
-                            moment(elem.TARGET_DATE).isBefore(moment(elem.RESOLVED_DATE))
-                        )
 
                         monthObj.data.push({
                             team: currentTeam,
-                            val: temp.filter(o => o == true).length
+                            val: queryResult.map(elem =>
+                                moment(elem.TARGET_DATE).isBefore(moment(elem.RESOLVED_DATE))
+                            ).filter(o => o == true).length
                         })
                     }
                 }

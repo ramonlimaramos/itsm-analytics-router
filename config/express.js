@@ -3,35 +3,47 @@
 'use strict'
 
 const path = require('path')
-const compression = require('compression')
+
+// Not in use
+//const templateEngine = require('express-dot-engine')
+// const auth = require('../auth')()
 
 const express = require('express')
-const templateEngine = require('express-dot-engine')
 const config = require('config')
 const itsm = require('../itsm')
-const auth = require('../auth')()
 const bodyParser = require('body-parser')
 
 module.exports = () => {
     const app = express()
-    app.use(compression())
+
+    // Port Definition
     app.set('port', process.env.PORT || 5111)
-    app.use(auth.initialize())
+
+    // Authorization Initialization
+    // app.use(auth.initialize())
+
+    // Body Http Part Configuration
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     app.use(bodyParser.json({ limit: '50mb' }))
     app.use(require('method-override')())
     app.disable('x-powered-by')
-    app.use('/itsm-analytics', express.static(path.join(__dirname, '../public')))
-    app.engine('dot', templateEngine.__express)
-    app.set('views', path.join(__dirname, '../views'))
-    app.set('view engine', 'dot')
-    app.use((req, res, next) => { // API Cross Domain
+
+    // Views and Template Engine Configuration
+    // app.use('/itsm-analytics', express.static(path.join(__dirname, '../public')))
+    // app.engine('dot', templateEngine.__express)
+    // app.set('views', path.join(__dirname, '../views'))
+    // app.set('view engine', 'dot')
+
+    // API Cross Domain
+    app.use((req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*")
         res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
         next()
     })
-    app.use((req, res, next) => { //Method Validation
+
+    // API Method Validation
+    app.use((req, res, next) => {
         let method = req.method
         if (method != 'GET' &&
             method != 'POST' &&
@@ -43,14 +55,15 @@ module.exports = () => {
             next()
     })
 
-    // routes definition
+    // Routes Definition
     itsm(app)
 
-    app.use((err, req, res, next) => { //Error Handle
+    // Error Handle
+    app.use((err, req, res, next) => {
         res.status(500).json(config.ERROR_MSG[500])
         next(err)
     })
-    app.use((req, res, next) => { // 404 Handler
+    app.use((req, res, next) => {
         res.status(404).json(config.ERROR_MSG[404]);
     });
 

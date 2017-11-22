@@ -7,42 +7,42 @@ const middleware = require('../middleware')()
 const worker = require('./worker')()
 const config = require('config').ITSM
 
-module.exports = () => {
+module.exports = (io) => {
     const methods = {}
 
-    methods.emitAll = (args) => {
+    methods.emitAll = () => {
         return co(function*() {
             try {
                 // Resolved Invokers
-                args.io.of('resolved')
+                io.sockets
                     .emit('resolvedAvgTimeResolution', yield worker.getResolvedAvgTimeResolution())
-                args.io.of('resolved')
+                io.sockets
                     .emit('resolvedQtdTimeResolution', yield worker.getResolvedQtdTimeResolution())
 
                 // Received Invokers
-                args.io.of('received')
+                io.sockets
                     .emit('receivedReceivedAndApprovedTeam', yield worker.getReceivedAndApprovedTeam())
-                args.io.of('received')
-                    .emit('receivedGranTotal', yield worker.getGranTotal())
-                args.io.of('received')
+                    // io.sockets
+                    //     .emit('receivedGranTotal', ield worker.getGranTotal())
+                io.sockets
                     .emit('receivedReceivedAndApprovedDept', yield worker.getReceivedAndApprovedDept())
 
                 // Ongoing Invokers
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingNotAcceptedHaeb', yield worker.getNotAcceptedHaeb())
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingPeriodDaysDelayed', yield worker.getPeriodDaysDelayed())
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingResolutionDelay', yield worker.getResolutionDelay())
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingSLASatisfactionTeam', yield worker.getSLASatisfactionTeam())
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingSLASatisfaction', yield worker.getSLASatisfactionTeam(true))
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingSLAAcceptence', yield worker.getSLAAcceptence())
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingResolution', yield worker.getResolution())
-                args.io.of('ongoing')
+                io.sockets
                     .emit('ongoingTotalMetrics', yield worker.getTotalTicketsMetrics())
             } catch (error) {
                 console.error(error)
@@ -76,14 +76,12 @@ module.exports = () => {
         })
     }
 
-    methods.sockets = (io, wk) => {
+    methods.sockets = () => {
         // Will emitt all sockets of ITSM
         console.log("ITSM Analytics starging sockets scheduler")
         let rule = new schedule.RecurrenceRule();
-        rule.second = new schedule.Range(0, 59, config.sch_sockets.sec)
-        schedule.scheduleJob(rule, methods.emitAll.bind(null, {
-            io: io
-        }))
+        rule.minute = new schedule.Range(0, 59, config.sch_sockets.min)
+        schedule.scheduleJob(rule, methods.emitAll)
     }
 
     methods.middleware = () => {
