@@ -67,10 +67,30 @@ const yearMetricsSchema = new mongo.schema.Schema({
     data: []
 }, { 'strict': false })
 
+const yearReceivedSchema = new mongo.schema.Schema({
+    year: {type: Number, unique: true },
+    dept: {data: { type: [] }, highcharts: { type: mongo.schema.Schema.Types.Mixed} },
+    team: {data: { type: [] }, highcharts: { type: mongo.schema.Schema.Types.Mixed} }
+}, { 'strict': false })
+
+const yearResolvedSchema = new mongo.schema.Schema({
+    year: {type: Number, unique: true },
+    qty: [],
+    avg: []
+}, { 'strict': false })
+
+const global = new mongo.schema.Schema({
+    year: Number,
+    lastUpdate: String
+}, {'strict': false})
+
 ticketSchema.plugin(mongo.paginate)
 
 const ticketModel = mongo.schema.model('ITSMData', ticketSchema)
 const yearMetricsModel = mongo.schema.model('ITSMYearMetrics', yearMetricsSchema)
+const yearReceivedModel = mongo.schema.model('ITSMYearReceived', yearReceivedSchema)
+const yearResolvedModel = mongo.schema.model('ITSMYearResolved', yearResolvedSchema)
+const globalModel = mongo.schema.model('ITSMGlobal', global)
 
 module.exports = () => {
     let methods = {}
@@ -185,6 +205,69 @@ module.exports = () => {
     methods.getMetrics = (params) => {
         return new Promise((resolve, reject) => {
             yearMetricsModel.find(params, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    // YearReceivedSchema Methods
+    methods.setReceived = (input) => {
+        return new Promise((resolve, reject) => {
+            let bulk = yearReceivedModel.collection.initializeOrderedBulkOp()
+            bulk.find({ year: input.year }).upsert().updateOne(input)
+            bulk.execute((err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    methods.getReceived = (params) => {
+        return new Promise((resolve, reject) => {
+            yearReceivedModel.find(params, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    // YearResolvedSchema Methods
+    methods.setResolved = (input) => {
+        return new Promise((resolve, reject) => {
+            let bulk = yearResolvedModel.collection.initializeOrderedBulkOp()
+            bulk.find({ year: input.year }).upsert().updateOne(input)
+            bulk.execute((err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    methods.getResolved = (params) => {
+        return new Promise((resolve, reject) => {
+            yearResolvedModel.find(params, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    // Global
+    methods.setGlobal = (input) => {
+        return new Promise((resolve, reject) => {
+            let bulk = globalModel.collection.initializeOrderedBulkOp()
+            bulk.find({ year: input.year }).upsert().updateOne(input)
+            bulk.execute((err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        })
+    }
+
+    methods.getGlobal = (params) => {
+        return new Promise((resolve, reject) => {
+            globalModel.find(params, (err, result) => {
                 if (err) reject(err)
                 resolve(result)
             })

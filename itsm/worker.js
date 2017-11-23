@@ -191,6 +191,37 @@ module.exports = () => {
         })
     }
 
+    methods.setReceived = () => {
+        return co(function*() {
+            let result = {}
+            try {
+                result.year = parseInt(moment().format('YYYY'))
+                result.team = yield methods.getReceivedAndApprovedTeam()
+                result.dept = yield methods.getReceivedAndApprovedDept()
+                yield itsm.setReceived(result)
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+
+            return true
+        })
+    }
+
+    methods.getReceived = (year) => {
+        return co(function*() {
+            let result
+            try {
+                year = year || parseInt(moment().format('YYYY'))
+                result = yield itsm.getReceived({ year: year })
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+            return result[0]
+        })
+    }
+
     methods.getGranTotal = () => {
         return co(function*() {
             let year = moment().format('YYYY'),
@@ -283,6 +314,37 @@ module.exports = () => {
                 console.log(error)
                 throw error
             }
+        })
+    }
+
+    methods.setResolved = () => {
+        return co(function*() {
+            let result = {}
+            try {
+                result.year = parseInt(moment().format('YYYY'))
+                result.qty = yield methods.getResolvedQtdTimeResolution()
+                result.avg = yield methods.getResolvedAvgTimeResolution()
+                yield itsm.setResolved(result)
+            } catch (err) {
+                console.log(error)
+                throw error
+            }
+
+            return true
+        })
+    }
+
+    methods.getResolved = (year) => {
+        return co(function*() {
+            let result
+            try {
+                year = year || parseInt(moment().format('YYYY'))
+                result = yield itsm.getResolved({ year: year })
+            } catch (error) {
+                console.log(error)
+                throw error
+            }
+            return result[0]
         })
     }
 
@@ -552,6 +614,32 @@ module.exports = () => {
                 console.log(error)
                 throw error
             }
+        })
+    }
+
+    // Global
+    methods.setGlobalAttributes = (input) => {
+        return co(function*() {
+            try {
+                yield itsm.setGlobal(input)
+            } catch (error) {
+                throw error
+            }
+
+            return true
+        })
+    }
+
+    methods.getGloblaAttributes = (year) => {
+        return co(function*(){
+            let result
+            try {
+                year = year || parseInt(moment().format('YYYY'))
+                result = yield itsm.getGlobal({ year: year })
+            } catch (error) {
+                throw error
+            }
+            return result
         })
     }
 

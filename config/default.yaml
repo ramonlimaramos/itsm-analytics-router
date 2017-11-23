@@ -53,6 +53,12 @@ ITSM:
     sch_sockets: 
         sec: 60
         min: 7
+    sch_received:
+        hour: 3
+        sec: 20
+    sch_resolved:
+        hour: 3
+        sec: 20
     EAI:
         PRD:
             endpointSync: 'http://10.121.241.115:5100/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'

@@ -13,13 +13,13 @@ const worker = require('./worker')()
 module.exports = (app) => {
     const controller = {}
 
-    controller._emitLastExecutionMiddleware = () => {
+    controller._setLastExecutionMiddleware = () => {
         return co(function*() {
             try {
-                let m = moment().format('HH:mm')
-                app.get('io').sockets.emit('lastExecutionMiddleware', m)
-                app.get('io').sockets.emit('lastExecutionMiddleware', m)
-                app.get('io').sockets.emit('lastExecutionMiddleware', m)
+                worker.setGlobalAttributes({
+                    year: parseInt(moment().format('YYYY')),
+                    lastUpdate: moment().format('HH:mm')
+                })
             } catch (error) {
                 console.log(error)
                 throw error
@@ -27,6 +27,14 @@ module.exports = (app) => {
             return true
         })
     }
+
+    controller.getLastExecution = wrap(function*(req, res, next) {
+        try {
+            return res.json(yield worker.getGloblaAttributes())
+        } catch (error) {
+            return res.status(403).json(err)
+        }
+    })
 
     controller.ticket = wrap(function*(req, res, next) {
         let result, input
@@ -56,7 +64,7 @@ module.exports = (app) => {
             let isNull = yield validation.isNull(req.body)
             if (!isNull) {
                 result = yield ticket.bulkMerge(req.body.results)
-                yield controller._emitLastExecutionMiddleware()
+                yield controller._setLastExecutionMiddleware()
             }
         } catch (err) {
             console.log(err)
@@ -132,10 +140,9 @@ module.exports = (app) => {
     })
 
     controller.received = wrap(function*(req, res, next) {
-        let result = {}
+        let result
         try {
-            result.team = yield worker.getReceivedAndApprovedTeam()
-            result.dept = yield worker.getReceivedAndApprovedDept()
+            result = yield worker.getReceived()
         } catch (err) {
             console.log(err)
             return res.status(403).json(err)
@@ -144,11 +151,11 @@ module.exports = (app) => {
     })
 
     controller.resolved = wrap(function*(req, res, next) {
-        let result = {}
+        let result
         try {
-            result.qty = yield worker.getResolvedQtdTimeResolution()
-            result.avg = yield worker.getResolvedAvgTimeResolution()
+            result = yield worker.getResolved()
         } catch (err) {
+            console.log(err)
             return res.status(403).json(err)
         }
         return res.json(result)

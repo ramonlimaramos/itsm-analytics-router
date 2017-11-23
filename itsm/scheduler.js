@@ -15,17 +15,11 @@ module.exports = (io) => {
             try {
                 // Resolved Invokers
                 io.sockets
-                    .emit('resolvedAvgTimeResolution', yield worker.getResolvedAvgTimeResolution())
-                io.sockets
-                    .emit('resolvedQtdTimeResolution', yield worker.getResolvedQtdTimeResolution())
+                    .emit('resolved', yield worker.getResolved())
 
                 // Received Invokers
                 io.sockets
-                    .emit('receivedReceivedAndApprovedTeam', yield worker.getReceivedAndApprovedTeam())
-                    // io.sockets
-                    //     .emit('receivedGranTotal', ield worker.getGranTotal())
-                io.sockets
-                    .emit('receivedReceivedAndApprovedDept', yield worker.getReceivedAndApprovedDept())
+                    .emit('received', yield worker.getReceived())
 
                 // Ongoing Invokers
                 io.sockets
@@ -44,6 +38,10 @@ module.exports = (io) => {
                     .emit('ongoingResolution', yield worker.getResolution())
                 io.sockets
                     .emit('ongoingTotalMetrics', yield worker.getTotalTicketsMetrics())
+                
+                // Last Execution Emittion
+                io.sockets
+                    .emit('lastExecutionMiddleware', yield worker.getGloblaAttributes())
             } catch (error) {
                 console.error(error)
             }
@@ -101,6 +99,42 @@ module.exports = (io) => {
             return co(function*() {
                 try {
                     yield worker.setTotalTicketsMetrics()
+                } catch (error) {
+                    console.log(error)
+                    throw error
+                }
+                return true
+            })
+        })
+    }
+
+    methods.received = () => {
+        // Will calculate the received by year
+        console.log("ITSM Analytics starging received scheduler")
+        let rule = new schedule.RecurrenceRule();
+        rule.hour = new schedule.Range(0, 59, config.sch_received.hour)
+        schedule.scheduleJob(rule, () => {
+            return co(function*() {
+                try {
+                    yield worker.setReceived()
+                } catch (error) {
+                    console.log(error)
+                    throw error
+                }
+                return true
+            })
+        })
+    }
+
+    methods.resolved = () => {
+        // Will calculate the resolved by year
+        console.log("ITSM Analytics starging resolved scheduler")
+        let rule = new schedule.RecurrenceRule();
+        rule.hour = new schedule.Range(0, 59, config.sch_resolved.hour)
+        schedule.scheduleJob(rule, () => {
+            return co(function*() {
+                try {
+                    yield worker.setResolved()
                 } catch (error) {
                     console.log(error)
                     throw error
