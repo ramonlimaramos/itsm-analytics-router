@@ -1,9 +1,4 @@
 node_modules
-views
-public
 temp
-.bowerrc
-.jshintrc
-bower.json
 .gitignore
 package.json

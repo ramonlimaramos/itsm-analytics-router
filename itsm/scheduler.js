@@ -44,6 +44,7 @@ module.exports = (io) => {
                     .emit('lastExecutionMiddleware', yield worker.getGloblaAttributes())
             } catch (error) {
                 console.error(error)
+                throw error
             }
             return true
         })

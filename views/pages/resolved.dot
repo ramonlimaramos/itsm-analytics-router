@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    [[= partial('../partials/head.dot')]]
+</head>
+
+<body class="black">
+    [[= partial('../partials/menu.dot')]]
+
+        <div class="cf-container cf-nav-active">
+            <div class="row">
+                <div class="title-pages">
+                    <span><b>ITSM:</b> Resolved</span>
+                    <div class="last">
+                        <span class="small">Last Execution:</span>
+                        <span class="medium"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6 cf-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <header>
+                                <p><span></span>Average Time Resolution (days)</p>
+                            </header>
+                            <div class="inner">
+                                <div class="cf-sparkline clearfix">
+                                    <div id="chart-line">
+                                        <canvas id="resolved-chart-bar" height="280" width="600"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <header>
+                                &nbsp;
+                                <!-- <p><span></span>Average Time Resolution</p> -->
+                            </header>
+                            <div class="inner">
+
+                                <div class="content cf-rss">
+                                    <!-- Team Table -->
+                                    <table id="rounded-corner" class="error itsm table-resolved-team" who="" summary="ITSM DASHBOARD - Tickets received and approved">
+                                        <thead>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="0" class="rounded-foot-left resolved-foot-line">
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="0" class="rounded-foot-left resolved-foot-line">
+                                                    <em id="errors-msg">Loading ...</em>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 cf-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <header>
+                                <p><span></span>Tickets resolved with delay (QTY)</p>
+                            </header>
+                            <div class="inner">
+                                <div class="cf-sparkline clearfix">
+                                    <div id="chart-line">
+                                        <canvas id="resolved-chart-bar-qtd" height="280" width="600"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- // end row -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="inner">
+                                <header>
+                                    &nbsp;
+                                    <!-- <p><span></span>Average Time Resolution</p> -->
+                                </header>
+                                <div class="content cf-rss">
+                                    <!-- Team Table -->
+                                    <table id="rounded-corner" class="error itsm table-resolved-team-qtd" who="" summary="ITSM DASHBOARD - Tickets received and approved">
+                                        <thead>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="0" class="rounded-foot-left resolved-foot-line">
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="0" class="rounded-foot-left resolved-foot-line">
+                                                    <em id="errors-msg">Loading ...</em>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- //end inner -->
+                        </div>
+                    </div>
+                </div>
+                <!-- //end col -->
+            </div>
+        </div>
+        <!-- //end container -->
+
+        [[= partial('../partials/script.dot')]]
+</body>
+
+</html>

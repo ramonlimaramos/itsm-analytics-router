@@ -1,0 +1,103 @@
+table#rounded-corner.real-time-errors {
+    width: 98%;
+    margin: 10px;
+}
+
+p {
+    color: darkgrey;
+}
+
+table#rounded-corner.real-time-errors,
+table#rounded-corner.real-time-errors th {
+    color: white;
+    font-size: 1.2em;
+}
+
+table#rounded-corner.real-time-errors tbody>td {
+    color: white;
+    background-color: black;
+    text-align: center;
+}
+
+table#rounded-corner.real-time-errors {
+    color: white;
+    /*background-color: black;*/
+    text-align: center;
+}
+
+table#rounded-corner.real-time-errors,
+table#rounded-corner.real-time-errors tbody>tr {
+    height: 50px;
+}
+
+table#rounded-corner.real-time-errors thead {
+    background-color: #000;
+}
+
+table tbody tr td {
+    border-bottom: 2px solid #333;
+    font-size: 1.2em;
+}
+
+
+/* ENTIRE LINE ERRORS - BG RED */
+
+table#rounded-corner.real-time-errors tbody tr.tr-red td {
+    background: #900a0a !important;
+}
+
+
+/*#rounded-corner.real-time-errors tr td:last-child {
+    background: #900a0a;
+    font-size: 1.5em;
+}
+
+#rounded-corner tbody tr:hover td:last-child
+{
+	background: #900a0a;
+}
+*/
+
+.container-a,
+.container-b,
+.container-c {
+    float: left;
+    width: 30%;
+    margin: 15px 15px 0px 15px;
+    color: white;
+    font-size: 12px;
+}
+
+.container-b {
+    text-align: center;
+}
+
+.container-b #datePlace {
+    font-size: 2.5em;
+}
+
+.container-c {
+    text-align: right;
+    font-weight: bold;
+}
+
+#recordTitle {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.bold {
+    font-weight: bold;
+    color: white;
+    font-size: 1.1em;
+}
+
+
+/*table tbody tr td:last-child*/
+
+.back-color-bold {
+    background-color: #900a0a;
+    color: white;
+}
+
+;

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    [[= partial('../partials/head.dot')]]
+
+        <link href="[[= model.base_url ]]css/eai-real-time-errors.css" rel="stylesheet">
+</head>
+
+<body class="black">
+
+    [[= partial('../partials/menu.dot')]]
+
+        <div class="cf-container cf-nav-active">
+
+            <div class="row">
+                <div class="title-pages">
+                    <span><b>ITSM:</b> Real-Time Tickets Delayed more than 90 days </span>
+                    <div class="last">
+                        <span class="small">Last Execution:</span>
+                        <span class="medium"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 cf-item">
+                    <div class="inner">
+
+
+                        <table id="rounded-corner" class="real-time-errors table-ongoing-nighteendays" summary="ITSM - Dashboard">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="rounded-company">Id</th>
+                                    <th scope="col" class="rounded-q1">Team</th>
+                                    <th scope="col" class="rounded-q2">Requester</th>
+                                    <th scope="col" class="rounded-q3">Service</th>
+                                    <th scope="col" class="rounded-q4">Assignee</th>
+                                    <th scope="col" class="rounded-q5">Open Date</th>
+                                    <th scope="col" class="rounded-q6">Target Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="rounded-foot-left">
+                                        <em id="errors-msg">Loading ...</em>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- //end container -->
+
+        [[= partial('../partials/script.dot')]]
+</body>
+
+</html>

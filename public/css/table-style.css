@@ -1,0 +1,228 @@
+/* ------------------
+ styling for the tables 
+   ------------------   */
+
+body {
+    line-height: 1.6em;
+}
+
+#rounded-corner {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;
+    /*margin: 45px;*/
+    width: 600px;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+#rounded-corner thead th.rounded-company {
+    text-align: center;
+    border-bottom: 1px solid #fff;
+    background: #000/*url('table-images/left.png')*/
+    left -1px no-repeat;
+}
+
+#rounded-corner thead th.rounded-q4 {
+    background: #000/*url('table-images/right.png')*/
+    right -1px no-repeat;
+}
+
+#rounded-corner th {
+    padding: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    color: #FFF;
+    background: #000;
+    text-align: center;
+    /*color: #039;
+	background: #b9c9fe;*/
+}
+
+#rounded-corner td {
+    padding: 8px;
+    background: #2b2b2b;
+    border-top: 1px solid #fff;
+    color: #FFF;
+}
+
+
+/* RED LINE */
+
+table#rounded-corner.itsm tbody tr.tr-red td {
+    background: #900a0a !important;
+}
+
+#rounded-corner.error td:last-child {
+    /*background-color: #900a0a;*/
+}
+
+
+/* SERVICE STATUS */
+
+#rounded-corner.service-status td:last-child.success {
+    /*background-color: #66CE39;	*/
+}
+
+#rounded-corner.service-status td:last-child.error {
+    /*background-color: #900a0a;*/
+}
+
+
+/* END SERVICE STATUS */
+
+
+/* COMPONENT STATUS */
+
+#rounded-corner.component-status td {
+    padding: 4px;
+}
+
+#rounded-corner.component-status td:last-child.success {
+    /*background-color: #66CE39;	*/
+}
+
+#rounded-corner.component-status td:last-child.error {
+    /*background-color: #900a0a;	*/
+}
+
+
+/* END COMPONENT STATUS */
+
+
+/* ===========================
+==============================
+	  START CRITICAL DASHBOARD
+==============================
+=========================== */
+
+#rounded-corner.critical td:last-child.success,
+#rounded-corner.critical th:last-child.success {
+    /*background-color: #66CE39;*/
+    background-color: #00FF00;
+}
+
+#rounded-corner.critical td:last-child.error,
+#rounded-corner.critical th:last-child.error {
+    /*background-color: #900a0a;*/
+    background-color: #FF0000;
+}
+
+#rounded-corner.critical th {
+    padding: 40px;
+    font-weight: bold;
+    font-size: 80px;
+    color: #FFF;
+    background: #000;
+    text-align: center;
+}
+
+#rounded-corner.critical {
+    font-size: 52px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#rounded-corner.critical td:first-child {
+    background: #15528B;
+    color: #86C4FF;
+}
+
+#rounded-corner.critical td {
+    padding: 0 15px !important;
+    height: 85px;
+    line-height: normal;
+    vertical-align: middle;
+    color: #000;
+}
+
+#rounded-corner.critical td marquee {
+    line-height: normal;
+    vertical-align: middle;
+}
+
+.title-pages.critical {
+    background: #4F81BD;
+    line-height: normal;
+    padding: 5px 5px 5px 30px;
+}
+
+.title-pages.critical .hour {
+    float: right;
+    margin: 0 30px 0 0;
+}
+
+
+/* ===========================
+==============================
+		END CRITICAL DASHBOARD
+==============================
+=========================== */
+
+#rounded-corner tfoot td.rounded-foot-left {
+    background: #2b2b2b/*url('table-images/botleft.png')*/
+    left bottom no-repeat !important;
+    text-align: left !important;
+}
+
+#rounded-corner tfoot td.rounded-foot-right {
+    background: #2b2b2b/*url('table-images/botright.png')*/
+    right bottom no-repeat;
+}
+
+#rounded-corner tbody tr:hover td {
+    background: #414141;
+}
+
+
+/* ---------------------------------------------
+                ITSM - Dashboard 
+--------------------------------------------- */
+
+#rounded-corner.itsm tbody tr td:nth-child(1),
+#rounded-corner.itsm thead tr th:nth-child(1) {
+    text-align: left;
+    padding-left: 20px;
+}
+
+body.itsm-analytics .content.cf-rss {
+    height: 105%;
+}
+
+
+/* ---------------------------------------------
+                ITSM - Datatable 
+--------------------------------------------- */
+
+#rounded-corner_filter {
+    padding-right: 15px;
+}
+
+#rounded-corner_length {
+    padding-left: 15px;
+}
+
+#rounded-corner_info {
+    padding-left: 15px;
+}
+
+#rounded-corner_paginate {
+    padding-right: 15px;
+}
+
+
+/* ---------------------------------------------
+                ITSM - Title 
+--------------------------------------------- */
+
+.title-pages .last {
+    float: right;
+    padding-right: 23px;
+    vertical-align: middle;
+}
+
+.title-pages .last .small {
+    font-size: 11px;
+}
+
+.title-pages .last .medium {
+    font-size: 20px;
+}

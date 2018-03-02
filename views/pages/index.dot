@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    [[= partial('../partials/head.dot')]]
+</head>
+
+<body class="black itsm-analytics">
+    [[= partial('../partials/menu.dot')]]
+
+        <div class="cf-container cf-nav-active">
+
+            <div class="row">
+                <div class="title-pages">
+                    <span><b>ITSM:</b> Main Overview (YTD)</span>
+                    <div class="last">
+                        <span class="small">Last Execution:</span>
+                        <span class="medium"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 cf-item">
+                    <div class="inner">
+                        <!-- Clocks -->
+                        <div class="row">
+                            <div class="col-sm-4 cf-item">
+                                <header>
+                                    <!-- <p><span></span>ALABAMA</p> -->
+                                    <p><span></span>CST (UTC -06:00)</p>
+                                </header>
+                                <div class="content">
+                                    <img src="img/flag-us.png" height="37" width="37" alt="Alabama" style="float:right;">
+                                    <div class="cf-td-custom alabama">
+                                        <div class="cf-td-time metric"></div>
+                                        <div class="cf-td-dd performance">
+                                            <p class="cf-td-day metric-small"></p>
+                                            <p class="cf-td-date metric-small"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 cf-item">
+                                <header>
+                                    <!-- <p><span></span>SÃO PAULO</p> -->
+                                    <p><span></span>BRT (UTC -03:00)</p>
+                                </header>
+                                <div class="content">
+                                    <img src="img/flag-br.png" height="37" width="37" alt="Brasil" style="float:right;">
+                                    <div class="cf-td-custom saopaulo">
+                                        <div class="cf-td-time metric"></div>
+                                        <div class="cf-td-dd performance">
+                                            <p class="cf-td-day metric-small"></p>
+                                            <p class="cf-td-date metric-small"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 cf-item">
+                                <header>
+                                    <!-- <p><span></span>SEOUL</p> -->
+                                    <p><span></span>KST (UTC +09:00)</p>
+                                </header>
+                                <div class="content">
+                                    <img src="img/flag-ko.png" height="37" width="37" alt="South Korea" style="float:right;">
+                                    <div class="cf-td-custom seoul">
+                                        <div class="cf-td-time metric"></div>
+                                        <div class="cf-td-dd performance">
+                                            <p class="cf-td-day metric-small"></p>
+                                            <p class="cf-td-date metric-small"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End-Clocks -->
+
+                        <!-- Total-Tickets -->
+                        <div class="row">
+                            <div class="col-sm-12 cf-item">
+                                <div class="inner">
+                                    <header>
+                                        <p><span></span>Total Tickets <img class="tt-subtitle" id="index-chart-legend" src="img/total-tickets-subtitle-v2.png"></p>
+                                    </header>
+                                    <div class="content">
+                                        <div class="cf-svmc-sparkline">
+                                            <div class="cf-svmc">
+                                                <div class="metric" id="total-count-place" style="font-size: 9em">0</div>
+                                                <div class="change m-green metric-small" id="atual-success">
+                                                    <!-- <div class="arrow-up"></div> -->
+                                                    <span class="large">0<span class="small">.00%</span></span>
+                                                </div>
+                                                <div class="change m-red metric-small" id="atual-error">
+                                                    <!-- <div class="arrow-down"></div> -->
+                                                    <span class="large">0<span class="small">.00%</span></span>
+                                                </div>
+                                            </div>
+                                            <div class="cf-sparkline clearfix">
+                                                <div id="chart-line">
+                                                    <canvas id="index-chart-line" height="280" width="615"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End-Total-Tickets -->
+                    </div>
+                </div>
+
+                <div class="col-sm-6 cf-item">
+                    <div class="inner">
+                        <div class="row">
+                            <div class="col-sm-4 cf-item">
+                                <header>
+                                    <p><span></span>SATISFACTION</p>
+                                </header>
+                                <div class="content cf-svp clearfix" id="percent-SATISFACTION">
+                                    <div class="chart" data-percent="100" data-layout="l-6-4"></div>
+                                    <div class="metrics">
+                                        <span class="metric">100</span>
+                                        <span class="metric-small">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //end cf-item -->
+                            <div class="col-sm-4 cf-item">
+                                <header>
+                                    <p><span></span>ACCEPTANCE</p>
+                                </header>
+                                <div class="content cf-svp clearfix" id="percent-SLAACPT">
+                                    <div class="chart" data-percent="100" data-layout="l-6-4"></div>
+                                    <div class="metrics">
+                                        <span class="metric">100</span>
+                                        <span class="metric-small">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //end cf-item -->
+                            <div class="col-sm-4 cf-item">
+                                <header>
+                                    <p><span></span>RESOLUTION</p>
+                                </header>
+                                <div class="content cf-svp clearfix" id="percent-RESOLUTION">
+                                    <div class="chart" data-percent="100" data-layout="l-6-4"></div>
+                                    <div class="metrics">
+                                        <span class="metric">100</span>
+                                        <span class="metric-small">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //end cf-item -->
+                        </div>
+                        <!-- // end row -->
+
+                        <div class="row">
+                            <div class="col-sm-12 cf-item">
+                                <div class="inner">
+                                    <header>
+                                        <p><span></span>FEED ON GOING</p>
+                                    </header>
+                                    <div class="content cf-rss">
+                                        <div id="cf-rss-5" class="carousel slide" data-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="item active">
+                                                    <table id="rounded-corner" class="error table-ongoing-notaccept itsm" who="" summary="ITSM DASHBOARD">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="5" scope="col" class="rounded-company">NEW TICKETS IN HAEB QUEUE</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col" class="rounded-company">Id</th>
+                                                                <th scope="col" class="rounded-q1">Team</th>
+                                                                <th scope="col" class="rounded-q2">Department</th>
+                                                                <th scope="col" class="rounded-q3">Open Date</th>
+                                                                <th scope="col" class="rounded-q4">Target Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="5" class="rounded-foot-left ">
+                                                                    <em id="msg "></em>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="item ">
+                                                    <table id="rounded-corner" class="error table-ongoing-nighteendays itsm" who="" summary="ITSM DASHBOARD">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="5 " scope="col" class="rounded-company ">ON-GOING TICKETS WITH MORE THAN 90 DAYS</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col" class="rounded-company">Id</th>
+                                                                <th scope="col" class="rounded-q1">Team</th>
+                                                                <th scope="col" class="rounded-q2">Department</th>
+                                                                <th scope="col" class="rounded-q3">Open Date</th>
+                                                                <th scope="col" class="rounded-q4">Target Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="5" class="rounded-foot-left ">
+                                                                    <em id="msg"></em>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="item">
+                                                    <table id="rounded-corner" class="error table-ongoing-resdelay itsm" who="" summary="ITSM DASHBOARD">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="5" scope="col" class="rounded-company">ON-GOING TICKETS WITH RESOLUTION DELAY</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col" class="rounded-company">Id</th>
+                                                                <th scope="col" class="rounded-q1">Team</th>
+                                                                <th scope="col" class="rounded-q2">Department</th>
+                                                                <th scope="col" class="rounded-q3">Open Date</th>
+                                                                <th scope="col" class="rounded-q4">Target Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="5" class="rounded-foot-left ">
+                                                                    <em id="msg"></em>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="carousel-indicators">
+                                                <li data-target="#cf-rss-5 " data-slide-to="0 " class="active"></li>
+                                                <li data-target="#cf-rss-5 " data-slide-to="1 " class=""></li>
+                                                <li data-target="#cf-rss-5 " data-slide-to="2 " class=""></li>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- //end inner -->
+
+                            </div>
+                            <!-- //end cf-item -->
+
+                        </div>
+
+                        <div class="row">
+                        </div>
+                    </div>
+                    <!-- //end inner -->
+                </div>
+                <!-- //end col -->
+
+            </div>
+        </div>
+        <!-- //end container -->
+
+        [[= partial('../partials/script.dot')]]
+</body>
+
+</html>

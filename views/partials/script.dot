@@ -1,0 +1,11 @@
+<script>
+    var baseUrl = "[[= model.base_url ]]";
+    var socketUrl = "[[= model.socket_url ]]";
+</script>
+<script src="[[= model.base_url ]]js/vendor/jquery/dist/jquery.min.js"></script>
+<script src="[[= model.base_url ]]js/plugins/jquery-datatable/jquery.dataTables.js"></script>
+<script src="[[= model.base_url ]]js/main.js"></script>
+<!--[if lt IE 9]>
+<script src="[[= model.base_url ]]js/plugins/respond.min.js"></script>
+<script src="[[= model.base_url ]]js/plugins/excanvas.min.js"></script>
+<![endif]-->
