@@ -1,8 +1,8 @@
 var global = {
     base_url: baseUrl,
     socket_url: socketUrl,
-    time_url: "http://10.127.3.82:5000/",
-    api_url: "http://10.127.38.210:5111",
+    time_url: "http://localhost:5000/",
+    api_url: "http://localhost:5111",
     ongoing: {
         notAccepted: '/api/itsm-analytics/v1/tickets/haeb',
         resolutionDelay: '/api/itsm-analytics/v1/tickets/delay',

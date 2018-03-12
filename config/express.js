@@ -4,8 +4,9 @@
 
 const path = require('path')
 
+const templateEngine = require('express-dot-engine')
+
 // Not in use
-//const templateEngine = require('express-dot-engine')
 // const auth = require('../auth')()
 
 const express = require('express')
@@ -29,10 +30,10 @@ module.exports = () => {
     app.disable('x-powered-by')
 
     // Views and Template Engine Configuration
-    // app.use('/itsm-analytics', express.static(path.join(__dirname, '../public')))
-    // app.engine('dot', templateEngine.__express)
-    // app.set('views', path.join(__dirname, '../views'))
-    // app.set('view engine', 'dot')
+    app.use('/itsm-analytics', express.static(path.join(__dirname, '../public')))
+    app.engine('dot', templateEngine.__express)
+    app.set('views', path.join(__dirname, '../views'))
+    app.set('view engine', 'dot')
 
     // API Cross Domain
     app.use((req, res, next) => {

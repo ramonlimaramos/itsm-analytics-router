@@ -2,3 +2,4 @@ node_modules
 temp
 .gitignore
 package.json
+.vscode

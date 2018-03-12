@@ -1,6 +1,6 @@
 EXPRESS:
     base_url: '/itsm-analytics/'
-    socket_url: 'http://10.127.38.210:5111'
+    socket_url: '[socket_url]'
 
 SOCKET:
     rememberTransport: false
@@ -15,15 +15,15 @@ ERROR_MSG:
   periodEnableQueryDateMsg: 'The period between start and end date is too large, for query in real-time'
 
 JWT:
-    jwt_secret: 'secret'
+    jwt_secret: '[secret]'
     jwt_session:
         session: false
     msg:
         access_denied: 'Unauthorized access'
 
 MONGO:
-    user: 'admin'
-    pwd: 'p4ssw0rd'
+    user: '[user]'
+    pwd: '[password]'
     uri: 'mongodb://%s:%s@localhost:27017/admin?autoMechanism=DEFAULT'
     port: 27017
     options:
@@ -61,10 +61,10 @@ ITSM:
         sec: 20
     EAI:
         PRD:
-            endpointSync: 'http://10.121.241.115:5100/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
-            user: 'ramon'
-            password: '995421'
+            endpointSync: '[rest_url]'
+            user: '[user]'
+            password: '[password]'
         DEV:
-            endpointSync: 'http://10.121.241.117:5200/invoke/HMBITSM.inbound.ITSM_Analytics_Results.service/request'
-            user: 'ramon'
-            password: '123456'
+            endpointSync: '[rest_url_dev]'
+            user: '[user_dev]'
+            password: '[pass_dev]'
