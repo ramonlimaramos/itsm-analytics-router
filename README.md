@@ -1,4 +1,4 @@
-# ITMS Analystics API
+# ITSM Analystics API
 
 API and Frontend application that able to connect to Tickets System Solution (ITSM) and provides and dashboard containing charts and metrics in real-time.
 
